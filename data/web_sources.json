@@ -1,0 +1,59 @@
+{
+  "sources": [
+    {
+      "name": "Blognone public IT news",
+      "url": "https://www.blognone.com/",
+      "platform": "web",
+      "source_type": "it_news_site",
+      "category": "IT News",
+      "priority_score": 60,
+      "max_links": 6,
+      "use_browser": false,
+      "active": true
+    },
+    {
+      "name": "Blognone hardware topic",
+      "url": "https://www.blognone.com/topics/hardware",
+      "platform": "web",
+      "source_type": "it_news_topic",
+      "category": "Hardware",
+      "priority_score": 70,
+      "max_links": 5,
+      "use_browser": false,
+      "active": true
+    },
+    {
+      "name": "Blognone software topic",
+      "url": "https://www.blognone.com/topics/software",
+      "platform": "web",
+      "source_type": "it_news_topic",
+      "category": "Software",
+      "priority_score": 55,
+      "max_links": 5,
+      "use_browser": false,
+      "active": true
+    },
+    {
+      "name": "Thaiware IT news public page",
+      "url": "https://news.thaiware.com/",
+      "platform": "web",
+      "source_type": "it_news_site",
+      "category": "Thai IT News",
+      "priority_score": 55,
+      "max_links": 5,
+      "use_browser": false,
+      "active": true
+    },
+    {
+      "name": "Advice News public page",
+      "url": "https://www.advice.co.th/news",
+      "platform": "web",
+      "source_type": "retailer_news_page",
+      "category": "IT Retail",
+      "priority_score": 80,
+      "max_links": 5,
+      "use_browser": false,
+      "active": false
+    }
+  ]
+}

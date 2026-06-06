@@ -1,0 +1,3 @@
+source_name,platform,source_url,source_type,post_url,post_text,like_count,comment_count,share_count,view_count
+คู่แข่ง A,facebook_manual,https://www.facebook.com/example-page,facebook_page_manual_export,https://www.facebook.com/example-page/posts/1,"โน้ตบุ๊กเปิดไม่ติด/เครื่องช้า แก้ยังไง? โพสต์ตัวอย่างสำหรับ import จากเพจ Facebook",45,12,8,0
+คู่แข่ง B,facebook_manual,https://www.facebook.com/example-page-2,facebook_page_manual_export,https://www.facebook.com/example-page-2/posts/2,"โปรโมชัน SSD อัปเกรดคอมเก่าให้เร็วขึ้น เหมาะกับร้านคอมท้องถิ่น",80,20,15,0

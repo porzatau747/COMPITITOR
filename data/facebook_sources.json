@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "name": "Example authorized Facebook page",
+      "page_id": "REPLACE_WITH_PAGE_ID_OR_USERNAME",
+      "page_url": "https://www.facebook.com/REPLACE_WITH_PAGE",
+      "category": "Facebook Competitor",
+      "location": "Prachuap Khiri Khan",
+      "priority_score": 85,
+      "limit": 10,
+      "active": false
+    }
+  ]
+}

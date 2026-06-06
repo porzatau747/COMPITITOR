@@ -1,0 +1,85 @@
+from datetime import datetime, timedelta
+
+import pytest
+from fastapi import HTTPException
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+
+from app.database import Base
+from app.models import JobRun
+
+
+class DummySettings:
+    admin_api_key = "secret-admin"
+    telegram_webhook_secret = "secret-webhook"
+    allowed_telegram_chat_ids = "12345, -100999"
+
+
+def test_require_admin_api_key_rejects_missing_or_wrong_key():
+    from app.security import require_admin_api_key
+
+    with pytest.raises(HTTPException) as missing:
+        require_admin_api_key(None, settings=DummySettings())
+    assert missing.value.status_code == 401
+
+    with pytest.raises(HTTPException) as wrong:
+        require_admin_api_key("wrong", settings=DummySettings())
+    assert wrong.value.status_code == 401
+
+
+def test_require_admin_api_key_accepts_expected_key():
+    from app.security import require_admin_api_key
+
+    assert require_admin_api_key("secret-admin", settings=DummySettings()) is True
+
+
+def test_validate_telegram_webhook_requires_secret_and_allowed_chat():
+    from app.security import validate_telegram_webhook_update
+
+    update = {"message": {"chat": {"id": 12345}, "text": "/today"}}
+    assert validate_telegram_webhook_update(update, "secret-webhook", settings=DummySettings()) is True
+
+    with pytest.raises(HTTPException) as bad_secret:
+        validate_telegram_webhook_update(update, "wrong", settings=DummySettings())
+    assert bad_secret.value.status_code == 401
+
+    with pytest.raises(HTTPException) as bad_chat:
+        validate_telegram_webhook_update({"message": {"chat": {"id": 777}, "text": "/today"}}, "secret-webhook", settings=DummySettings())
+    assert bad_chat.value.status_code == 403
+
+
+def test_cleanup_stale_job_runs_marks_old_running_jobs_stale():
+    from app.jobs.daily_workflow import cleanup_stale_job_runs
+
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    TestingSession = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+    Base.metadata.create_all(bind=engine)
+    db = TestingSession()
+    try:
+        stale = JobRun(
+            job_name="full_daily",
+            status="running",
+            started_at=datetime.utcnow() - timedelta(hours=2),
+        )
+        active = JobRun(
+            job_name="full_daily",
+            status="running",
+            started_at=datetime.utcnow(),
+        )
+        db.add_all([stale, active])
+        db.commit()
+
+        assert cleanup_stale_job_runs(db, stale_after_minutes=30) == 1
+        db.refresh(stale)
+        db.refresh(active)
+        assert stale.status == "stale"
+        assert stale.finished_at is not None
+        assert "exceeded 30 minutes" in stale.error
+        assert active.status == "running"
+    finally:
+        db.close()

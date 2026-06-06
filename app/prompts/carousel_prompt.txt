@@ -1,0 +1,9 @@
+สร้างโครงโพสต์ Carousel 5 สไลด์ จากไอเดียนี้:
+{idea_json}
+
+รูปแบบ:
+Slide 1: Hook
+Slide 2: Problem
+Slide 3: Explain
+Slide 4: Product/Service Bridge
+Slide 5: CTA

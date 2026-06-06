@@ -174,7 +174,7 @@ python -c "import httpx; print(httpx.post('http://127.0.0.1:8010/sources', json=
 
 ```text
 data/manual_import_template.csv
-data/facebook_manual_import_template.csv
+data/facebook_competitor_posts_template.csv
 ```
 
 คอลัมน์ที่รองรับ:
@@ -186,7 +186,7 @@ source_name, platform, source_url, source_type, post_url, post_text, like_count,
 รัน import manual/Facebook export:
 
 ```bash
-python scripts/import_manual_data.py data/facebook_manual_import_template.csv --score
+python scripts/import_manual_data.py data/facebook_competitor_posts_template.csv --score
 ```
 
 ## Facebook competitor data
@@ -231,6 +231,14 @@ python scripts/import_web_sources.py --score
 
 ## ย้าย SQLite ไป PostgreSQL
 
+ก่อนย้ายหรือก่อนแก้ข้อมูลจำนวนมาก ให้ backup SQLite local:
+
+```bash
+python scripts/backup_sqlite.py
+```
+
+ไฟล์ backup จะอยู่ใน `backups/` และถูก ignore จาก git
+
 เมื่อมี PostgreSQL พร้อมแล้ว ตั้ง URL ปลายทาง:
 
 ```bash
@@ -257,17 +265,36 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/advice_conten
 
 ## ทดสอบ Telegram
 
-1. ตั้ง `TELEGRAM_BOT_TOKEN` และ `TELEGRAM_CHAT_ID` ใน `.env`
-2. สร้าง report ก่อน:
+ตรวจ token, webhook info และส่งข้อความทดสอบ:
 
 ```bash
-python -c "import httpx; print(httpx.post('http://127.0.0.1:8010/jobs/full-daily-run').json())"
+python scripts/telegram_ops.py check --send-test
 ```
 
-3. ส่งรายงาน:
+ตั้ง webhook จริงต้องมี public HTTPS URL ที่ชี้มาที่ FastAPI endpoint `/telegram/webhook` แล้วตั้งค่าใน `.env`:
+
+```env
+PUBLIC_WEBHOOK_URL=https://your-domain.example/telegram/webhook
+```
+
+จากนั้นรัน:
 
 ```bash
-python -c "import httpx; print(httpx.post('http://127.0.0.1:8010/reports/send-telegram').json())"
+python scripts/telegram_ops.py set-webhook --drop-pending-updates
+```
+
+หรือส่ง URL ตรง ๆ:
+
+```bash
+python scripts/telegram_ops.py set-webhook --url https://your-domain.example/telegram/webhook --drop-pending-updates
+```
+
+ถ้ายังไม่มี public HTTPS URL ให้ใช้ Telegram sender + Hermes cron รายวันไปก่อน; Bot API จะส่งรายงานได้ แต่ Telegram จะยังยิง commands เข้า `/telegram/webhook` จาก internet ไม่ได้
+
+ส่งรายงานล่าสุดด้วย script workflow:
+
+```bash
+python scripts/run_daily_report.py
 ```
 
 ถ้าไม่ได้ตั้งค่า Telegram ระบบจะ log warning และตอบ `sent: false`
@@ -289,7 +316,14 @@ Webhook endpoint: `POST /telegram/webhook`
 ทดสอบแบบไม่ต้องต่อ Telegram จริง:
 
 ```bash
-python -c "import httpx; print(httpx.post('http://127.0.0.1:8010/telegram/webhook', json={'message': {'text': '/caption 1'}}).json()['reply'])"
+python - <<'PY'
+import os, httpx
+from dotenv import load_dotenv
+load_dotenv()
+headers={'X-Telegram-Bot-Api-Secret-Token': os.getenv('TELEGRAM_WEBHOOK_SECRET','')}
+payload={'message': {'chat': {'id': int(os.getenv('TELEGRAM_CHAT_ID','0'))}, 'text': '/caption 1'}}
+print(httpx.post('http://127.0.0.1:8010/telegram/webhook', headers=headers, json=payload).json()['reply'])
+PY
 ```
 
 ## รัน scheduler
@@ -330,8 +364,9 @@ python -m pytest tests -q
 
 ## ขั้นตอนต่อไปที่แนะนำ
 
-1. ใส่เพจคู่แข่งใน `data/facebook_sources.json` เมื่อมี Meta Graph API token ที่ใช้ได้ หรือใช้ `data/facebook_manual_import_template.csv` สำหรับ import จาก Google Sheet
-2. ตั้ง PostgreSQL จริงแล้วรัน `scripts/migrate_sqlite_to_postgres.py`
-3. ตรวจ `scripts/source_health_report.py` เป็นระยะเพื่อดู source ที่ empty/stale
-4. เพิ่ม feedback loop จากโพสต์จริงของร้าน เช่น inbox/engagement ที่เกิดขึ้น
-5. ถ้าจะเปิด public endpoint ให้เพิ่ม authentication ก่อน แม้ตอนนี้จงใจยังไม่เปิดตามคำขอ
+1. ถ้ามี domain/HTTPS แล้ว ให้ตั้ง `PUBLIC_WEBHOOK_URL` และรัน `python scripts/telegram_ops.py set-webhook --drop-pending-updates`
+2. ใส่โพสต์คู่แข่งจริงลง `data/facebook_competitor_posts_template.csv` จากข้อมูล public/manual/Google Sheet แล้ว import ด้วย `python scripts/import_manual_data.py data/facebook_competitor_posts_template.csv --score`
+3. ตั้ง PostgreSQL จริงแล้วรัน `scripts/migrate_sqlite_to_postgres.py`
+4. ตรวจ `scripts/source_health_report.py` เป็นระยะเพื่อดู source ที่ empty/stale
+5. เพิ่ม feedback loop จากโพสต์จริงของร้าน เช่น inbox/engagement ที่เกิดขึ้น
+6. ถ้าจะเปิด public endpoint ให้ตั้ง reverse proxy HTTPS และตรวจ `ADMIN_API_KEY`, `TELEGRAM_WEBHOOK_SECRET`, `ALLOWED_TELEGRAM_CHAT_IDS` ทุกครั้งก่อนเปิด port

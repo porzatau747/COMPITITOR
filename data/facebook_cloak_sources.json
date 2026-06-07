@@ -1,0 +1,92 @@
+{
+  "sources": [
+    {
+      "name": "Advice Prachuap Khiri Khan",
+      "url": "https://www.facebook.com/AdvicePrachuapKhiriKhan",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "IT Retail",
+      "location": "Prachuap Khiri Khan",
+      "priority_score": 85,
+      "limit_posts": 5,
+      "active": true
+    },
+    {
+      "name": "Advice Phichit",
+      "url": "https://www.facebook.com/AdvicePhichit",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "IT Retail",
+      "location": "Phichit",
+      "priority_score": 85,
+      "limit_posts": 5,
+      "active": true
+    },
+    {
+      "name": "comcraft.ds",
+      "url": "https://www.facebook.com/comcraft.ds",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "IT Tips",
+      "location": null,
+      "priority_score": 80,
+      "limit_posts": 5,
+      "active": true
+    },
+    {
+      "name": "notebookspec",
+      "url": "https://www.facebook.com/notebookspec",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "Hardware News",
+      "location": null,
+      "priority_score": 80,
+      "limit_posts": 5,
+      "active": true
+    },
+    {
+      "name": "overclockzonefanpage",
+      "url": "https://www.facebook.com/overclockzonefanpage",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "Hardware News",
+      "location": null,
+      "priority_score": 80,
+      "limit_posts": 5,
+      "active": true
+    },
+    {
+      "name": "techhub.arip",
+      "url": "https://www.facebook.com/techhub.arip",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "IT News",
+      "location": null,
+      "priority_score": 80,
+      "limit_posts": 5,
+      "active": true
+    },
+    {
+      "name": "CPUCore2Duo",
+      "url": "https://www.facebook.com/CPUCore2Duo",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "IT Tips",
+      "location": null,
+      "priority_score": 80,
+      "limit_posts": 5,
+      "active": true
+    },
+    {
+      "name": "itcityofficial",
+      "url": "https://www.facebook.com/itcityofficial",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "IT Retail",
+      "location": null,
+      "priority_score": 80,
+      "limit_posts": 5,
+      "active": true
+    }
+  ]
+}

@@ -3,8 +3,9 @@ import logging
 import re
 import time
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlparse
 from lxml import html
 from sqlalchemy.orm import Session
 from app.config import get_settings
@@ -154,7 +155,7 @@ class FacebookCloakCollector:
                 post_url=post_data["url"],
                 post_text=post_data["text"][:6000],
                 media_url=None,
-                posted_at=datetime.utcnow(), # Default to now for public posts
+                posted_at=datetime.now(timezone.utc).replace(tzinfo=None), # Default to now for public posts
                 like_count=post_data["likes"],
                 comment_count=post_data["comments"],
                 share_count=post_data["shares"],
@@ -167,6 +168,9 @@ class FacebookCloakCollector:
         return imported
 
     def fetch_page(self, url: str) -> str | None:
+        parsed = urlparse(url)
+        if parsed.netloc.lower() not in {"www.facebook.com", "facebook.com"}:
+            raise ValueError(f"Invalid Facebook domain: {url}")
         from cloakbrowser import launch
         browser = launch(headless=True)
         try:

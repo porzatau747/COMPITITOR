@@ -1,23 +1,23 @@
-# Facebook Cloak Scraper Implementation Plan
+# แผนการดำเนินงาน: ตัวดึงข้อมูล Facebook ด้วย CloakBrowser
 
-> **For Antigravity:** REQUIRED WORKFLOW: Use `.agent/workflows/execute-plan.md` to execute this plan in single-flow mode.
+> **สำหรับ Antigravity:** ขั้นตอนการทำงานที่ต้องปฏิบัติ: ใช้ `.agent/workflows/execute-plan.md` เพื่อรันแผนงานนี้ในแบบ single-flow mode
 
-**Goal:** Implement a dedicated Facebook competitor page collector (`FacebookCloakCollector`) that runs via CloakBrowser to fetch public posts and their engagement metrics.
+**เป้าหมาย:** พัฒนาตัวรวบรวมข้อมูลเพจคู่แข่ง Facebook (`FacebookCloakCollector`) ที่ทำงานผ่าน CloakBrowser เพื่อดึงโพสต์สาธารณะและยอดการมีส่วนร่วม (Engagement Metrics) มาบันทึกในฐานข้อมูล
 
-**Architecture:** Reads target URLs from a JSON file, uses CloakBrowser (playwright) to load page feeds, scrolls page to fetch posts, extracts text, permalinks and counts from HTML, and saves to database.
+**สถาปัตยกรรม:** อ่านเป้าหมาย URL จากไฟล์คอนฟิก JSON, เรียกใช้ CloakBrowser (Playwright) เพื่อเปิดหน้าเพจสาธารณะ, เลื่อนหน้าจอเล็กน้อยเพื่อให้ข้อมูลโหลดครบถ้วน, แกะข้อความ ลิงก์โพสต์ (Permalink) และยอดผู้ใช้มีส่วนร่วมจากโค้ด HTML แล้วเซฟลงฐานข้อมูล
 
-**Tech Stack:** Python, Playwright (CloakBrowser), lxml/BeautifulSoup, SQLite/PostgreSQL, SQLAlchemy.
+**เครื่องมือที่ใช้:** Python, Playwright (CloakBrowser), lxml/BeautifulSoup, SQLite/PostgreSQL, SQLAlchemy
 
 ---
 
-### Task 1: Create Configuration File
+### ขั้นตอนที่ 1: สร้างไฟล์การตั้งค่า (Configuration File)
 
-**Files:**
-- Create: `data/facebook_cloak_sources.json`
+**ไฟล์ที่เกี่ยวข้อง:**
+- สร้างไฟล์ใหม่: `data/facebook_cloak_sources.json`
 
-**Step 1: Write the config file**
+**ขั้นย่อย 1: เขียนไฟล์คอนฟิก**
 
-Create `data/facebook_cloak_sources.json` with the following content:
+สร้างไฟล์ `data/facebook_cloak_sources.json` ด้วยเนื้อหาต่อไปนี้:
 
 ```json
 {
@@ -114,12 +114,12 @@ Create `data/facebook_cloak_sources.json` with the following content:
 }
 ```
 
-**Step 2: Run verification**
+**ขั้นย่อย 2: รันการตรวจสอบความถูกต้อง**
 
-Run: `python -c "import json; json.load(open('data/facebook_cloak_sources.json', encoding='utf-8'))"`
-Expected: Complete successfully (no json parse error)
+รันคำสั่ง: `python -c "import json; json.load(open('data/facebook_cloak_sources.json', encoding='utf-8'))"`
+ผลลัพธ์ที่คาดหวัง: รันผ่านสำเร็จ ไม่มีข้อผิดพลาดทางไวยากรณ์ JSON
 
-**Step 3: Commit**
+**ขั้นย่อย 3: บันทึก Git Commit**
 
 ```bash
 git add data/facebook_cloak_sources.json
@@ -128,14 +128,14 @@ git commit -m "feat: add facebook cloak sources config file"
 
 ---
 
-### Task 2: Create Collector Tests
+### ขั้นตอนที่ 2: เขียนชุดทดสอบของตัวสะสมข้อมูล (Collector Tests)
 
-**Files:**
-- Create: `tests/test_facebook_cloak_collector.py`
+**ไฟล์ที่เกี่ยวข้อง:**
+- สร้างไฟล์ใหม่: `tests/test_facebook_cloak_collector.py`
 
-**Step 1: Write failing test**
+**ขั้นย่อย 1: เขียนชุดทดสอบที่คาดว่าจะล้มเหลว (Failing Test)**
 
-Write unit tests that mock HTML parsing.
+เขียนไฟล์สำหรับทดสอบตรรกะการแกะข้อมูล (Parsing Logic)
 
 ```python
 from app.collectors.facebook_cloak_collector import parse_facebook_post, parse_engagement_number
@@ -168,12 +168,12 @@ def test_parse_facebook_post_html():
     assert post["shares"] == 45
 ```
 
-**Step 2: Run test to verify it fails**
+**ขั้นย่อย 2: รันชุดทดสอบเพื่อยืนยันว่าทำงานล้มเหลว**
 
-Run: `python -m pytest tests/test_facebook_cloak_collector.py -v`
-Expected: FAIL due to missing imports or missing module.
+รันคำสั่ง: `python -m pytest tests/test_facebook_cloak_collector.py -v`
+ผลลัพธ์ที่คาดหวัง: เกิดข้อผิดพลาด (FAIL) เนื่องจากยังไม่มีคลาสหรือโมดูล `FacebookCloakCollector` ในระบบ
 
-**Step 3: Commit**
+**ขั้นย่อย 3: บันทึก Git Commit**
 
 ```bash
 git add tests/test_facebook_cloak_collector.py
@@ -182,14 +182,14 @@ git commit -m "test: add tests for facebook cloak collector parsing logic"
 
 ---
 
-### Task 3: Implement FacebookCloakCollector
+### ขั้นตอนที่ 3: พัฒนาคลาส FacebookCloakCollector
 
-**Files:**
-- Create: `app/collectors/facebook_cloak_collector.py`
+**ไฟล์ที่เกี่ยวข้อง:**
+- สร้างไฟล์ใหม่: `app/collectors/facebook_cloak_collector.py`
 
-**Step 1: Write implementation**
+**ขั้นย่อย 1: พัฒนาฟังก์ชันการทำงาน**
 
-Create `app/collectors/facebook_cloak_collector.py` with parsing utility functions and the collector class:
+สร้างไฟล์ `app/collectors/facebook_cloak_collector.py` พร้อมเขียนฟังก์ชันแปลงยอด Engagement และการดึงข้อมูลผ่านหน้าเว็บบน CloakBrowser:
 
 ```python
 import json
@@ -392,12 +392,12 @@ class FacebookCloakCollector:
         return source
 ```
 
-**Step 2: Run verification**
+**ขั้นย่อย 2: รันชุดทดสอบเพื่อยืนยันว่าทำงานผ่าน**
 
-Run: `python -m pytest tests/test_facebook_cloak_collector.py -v`
-Expected: PASS
+รันคำสั่ง: `python -m pytest tests/test_facebook_cloak_collector.py -v`
+ผลลัพธ์ที่คาดหวัง: ผ่านการทดสอบทั้งหมด (PASS)
 
-**Step 3: Commit**
+**ขั้นย่อย 3: บันทึก Git Commit**
 
 ```bash
 git add app/collectors/facebook_cloak_collector.py
@@ -406,23 +406,26 @@ git commit -m "feat: implement FacebookCloakCollector class"
 
 ---
 
-### Task 4: Integrate into Collector Service
+### ขั้นตอนที่ 4: เชื่อมต่อระบบเข้ากับ Collector Service หลัก
 
-**Files:**
-- Modify: `app/services/collector_service.py`
+**ไฟล์ที่เกี่ยวข้อง:**
+- แก้ไขไฟล์เดิม: `app/services/collector_service.py`
 
-**Step 1: Write implementation**
+**ขั้นย่อย 1: ปรับปรุงโค้ดเชื่อมต่อ**
 
-Modify `app/services/collector_service.py` to import and call the new collector:
+แก้ไขไฟล์ `app/services/collector_service.py` เพื่อเรียกใช้งานโมดูลใหม่ในการรันงานปกติ (ไม่ใช่ Mock Mode):
 
 ```diff
--from app.collectors.facebook_graph_collector import FacebookGraphCollector
-+from app.collectors.facebook_graph_collector import FacebookGraphCollector
+@@ -3,6 +3,7 @@
+ from app.config import get_settings
+ from app.collectors.mock_collector import MockCollector
+ from app.collectors.web_agent_collector import WebAgentCollector
+ from app.collectors.facebook_graph_collector import FacebookGraphCollector
 +from app.collectors.facebook_cloak_collector import FacebookCloakCollector
-
+ logger=logging.getLogger(__name__)
+ 
  def collect_recent_posts(db: Session, hours: int = 24) -> int:
-         if settings.mock_mode:
-             posts=MockCollector().collect(db, hours=hours)
+@@ -14,6 +15,7 @@
          else:
              posts=[]
              posts.extend(WebAgentCollector().collect(db, hours=hours))
@@ -431,12 +434,12 @@ Modify `app/services/collector_service.py` to import and call the new collector:
              if not posts:
 ```
 
-**Step 2: Run verification**
+**ขั้นย่อย 2: รันการตรวจสอบความถูกต้องทั้งหมด**
 
-Run: `python -m pytest tests/`
-Expected: 100% tests pass (no errors, no syntax regressions)
+รันคำสั่ง: `python -m pytest tests/`
+ผลลัพธ์ที่คาดหวัง: ผ่านการทดสอบทั้งหมด 100% (รวม 21 เคสและไม่มีการทำงานที่สะดุด)
 
-**Step 3: Commit**
+**ขั้นย่อย 3: บันทึก Git Commit**
 
 ```bash
 git add app/services/collector_service.py

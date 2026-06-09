@@ -107,13 +107,49 @@ class FacebookCloakCollector:
 
     def load_sources(self) -> list[FacebookCloakConfig]:
         if not self.config_path.exists():
-            return []
-        raw = json.loads(self.config_path.read_text(encoding="utf-8"))
-        if isinstance(raw, dict):
-            raw = raw.get("sources", [])
-        return [
+            raw = []
+        else:
+            raw = json.loads(self.config_path.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                raw = raw.get("sources", [])
+        
+        configs = [
             FacebookCloakConfig(**item) for item in raw if item.get("active", True)
         ]
+        
+        forced_urls = [
+            "https://www.facebook.com/AdvicePrachuapKhiriKhan",
+            "https://www.facebook.com/AdvicePhichit",
+            "https://www.facebook.com/comcraft.ds",
+            "https://www.facebook.com/notebookspec",
+            "https://www.facebook.com/overclockzonefanpage",
+            "https://www.facebook.com/techhub.arip",
+            "https://www.facebook.com/CPUCore2Duo",
+            "https://www.facebook.com/itcityofficial"
+        ]
+        
+        filtered_configs = []
+        for url in forced_urls:
+            found = False
+            for cfg in configs:
+                if cfg.url.lower().rstrip('/') == url.lower().rstrip('/'):
+                    filtered_configs.append(cfg)
+                    found = True
+                    break
+            if not found:
+                name = url.rstrip('/').split('/')[-1]
+                default_cfg = FacebookCloakConfig(
+                    name=name,
+                    url=url,
+                    platform="facebook_cloak",
+                    source_type="facebook_page_public",
+                    priority_score=80,
+                    limit_posts=5,
+                    active=True
+                )
+                filtered_configs.append(default_cfg)
+                
+        return filtered_configs
 
     def collect(self, db: Session, hours: int = 24) -> list[Post]:
         sources = self.load_sources()

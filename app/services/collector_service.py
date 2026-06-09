@@ -14,8 +14,9 @@ def collect_recent_posts(db: Session, hours: int = 24) -> int:
             posts=MockCollector().collect(db, hours=hours)
         else:
             posts=[]
-            posts.extend(WebAgentCollector().collect(db, hours=hours))
-            posts.extend(FacebookGraphCollector().collect(db, hours=hours))
+            # WebAgentCollector and FacebookGraphCollector are disabled per competitor page restrictions
+            # posts.extend(WebAgentCollector().collect(db, hours=hours))
+            # posts.extend(FacebookGraphCollector().collect(db, hours=hours))
             posts.extend(FacebookCloakCollector().collect(db, hours=hours))
             if not posts:
                 logger.info("collectors found no new public/authorized posts; keeping existing database content")

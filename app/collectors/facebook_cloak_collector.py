@@ -125,7 +125,8 @@ class FacebookCloakCollector:
             "https://www.facebook.com/overclockzonefanpage",
             "https://www.facebook.com/techhub.arip",
             "https://www.facebook.com/CPUCore2Duo",
-            "https://www.facebook.com/itcityofficial"
+            "https://www.facebook.com/itcityofficial",
+            "https://www.facebook.com/advicepranburi"
         ]
         
         filtered_configs = []

@@ -87,6 +87,17 @@
       "priority_score": 80,
       "limit_posts": 5,
       "active": true
+    },
+    {
+      "name": "Advice Pranburi",
+      "url": "https://www.facebook.com/advicepranburi",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "IT Retail",
+      "location": "Pranburi",
+      "priority_score": 85,
+      "limit_posts": 5,
+      "active": true
     }
   ]
 }

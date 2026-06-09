@@ -7,7 +7,10 @@ from app.services.scoring_service import detect_categories
 logger=logging.getLogger(__name__)
 PROMPT_PATH=Path(__file__).resolve().parents[1] / "prompts" / "analyze_post_prompt.txt"
 
-REQUIRED_KEYS = {"hook", "hook_type", "content_type", "pain_point", "engagement_trigger", "why_it_worked", "risk", "detected_product_category"}
+REQUIRED_KEYS = {
+    "hook", "hook_type", "content_type", "pain_point", "engagement_trigger", "why_it_worked", "risk", "detected_product_category",
+    "local_angle", "suggested_hook", "caption_draft", "creative_direction", "sales_bridge", "cta"
+}
 
 def mock_analyze_post(post, source_name: str) -> dict:
     cats=detect_categories(post.post_text)

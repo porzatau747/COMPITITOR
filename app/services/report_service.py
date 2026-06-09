@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
-from app.models import Post, Analysis, DailyReport, ContentMemory
+from app.models import Post, Analysis, DailyReport, ContentMemory, Source
 from app.config import get_settings
 from app.services.ai_analyzer_service import analyze_post
 from app.services.local_adaptation_service import adapt_for_advice
@@ -14,11 +14,25 @@ def _today_in_config_timezone() -> date:
 
 def _recent_ranked_posts(db: Session, limit: int = 5, days: int = 3) -> list[Post]:
     cutoff=datetime.utcnow()-timedelta(days=days)
-    recent=db.query(Post).filter(Post.collected_at >= cutoff).order_by(Post.final_score.desc()).limit(limit).all()
+    recent=(
+        db.query(Post)
+        .join(Source)
+        .filter(Source.active == True, Post.collected_at >= cutoff)
+        .order_by(Post.final_score.desc())
+        .limit(limit)
+        .all()
+    )
     if len(recent) >= limit:
         return recent
     seen={p.id for p in recent}
-    fallback=db.query(Post).order_by(Post.final_score.desc()).limit(limit * 2).all()
+    fallback=(
+        db.query(Post)
+        .join(Source)
+        .filter(Source.active == True)
+        .order_by(Post.final_score.desc())
+        .limit(limit * 2)
+        .all()
+    )
     for post in fallback:
         if post.id not in seen:
             recent.append(post); seen.add(post.id)
@@ -46,9 +60,33 @@ def score_title(post: Post) -> str:
     txt=(post.post_text or "").strip()
     return txt[:55] + ("..." if len(txt)>55 else "")
 
+def _safe_str(val) -> str | None:
+    if val is None:
+        return None
+    if isinstance(val, list):
+        return "\n".join(str(item) for item in val)
+    if isinstance(val, dict):
+        import json
+        return json.dumps(val, ensure_ascii=False)
+    return str(val)
+
+def _safe_list(val) -> list:
+    if val is None:
+        return []
+    if isinstance(val, list):
+        return val
+    return [str(val)]
+
 def analyze_top_posts(db: Session, limit: int = 5) -> int:
     count=0
-    posts=db.query(Post).order_by(Post.final_score.desc()).limit(limit * 3).all()
+    posts=(
+        db.query(Post)
+        .join(Source)
+        .filter(Source.active == True)
+        .order_by(Post.final_score.desc())
+        .limit(limit * 3)
+        .all()
+    )
     for post in posts:
         if count >= limit:
             break
@@ -59,9 +97,41 @@ def analyze_top_posts(db: Session, limit: int = 5) -> int:
             risks=list(a.get("risk") or [])
             risks.append("AI วิเคราะห์จริงไม่สำเร็จ ระบบใช้ fallback mock analysis")
             a["risk"]=risks
-        obj=Analysis(post_id=post.id, hook=a.get('hook'), hook_type=a.get('hook_type'), content_type=a.get('content_type'), pain_point=a.get('pain_point'), engagement_trigger=a.get('engagement_trigger'), why_it_worked=a.get('why_it_worked'), risk=a.get('risk'), **local)
+        
+        hook = _safe_str(a.get('hook'))
+        content_type = _safe_str(a.get('content_type'))
+        pain_point = _safe_str(a.get('pain_point'))
+        why_it_worked = _safe_str(a.get('why_it_worked'))
+        
+        local_angle = _safe_str(local.get('local_angle'))
+        suggested_hook = _safe_str(local.get('suggested_hook'))
+        caption_draft = _safe_str(local.get('caption_draft'))
+        creative_direction = _safe_str(local.get('creative_direction'))
+        sales_bridge = _safe_str(local.get('sales_bridge'))
+        cta = _safe_str(local.get('cta'))
+        
+        hook_type = _safe_list(a.get('hook_type'))
+        engagement_trigger = _safe_list(a.get('engagement_trigger'))
+        risk = _safe_list(a.get('risk'))
+        
+        obj=Analysis(
+            post_id=post.id, 
+            hook=hook, 
+            hook_type=hook_type, 
+            content_type=content_type, 
+            pain_point=pain_point, 
+            engagement_trigger=engagement_trigger, 
+            why_it_worked=why_it_worked, 
+            risk=risk,
+            local_angle=local_angle,
+            suggested_hook=suggested_hook,
+            caption_draft=caption_draft,
+            creative_direction=creative_direction,
+            sales_bridge=sales_bridge,
+            cta=cta
+        )
         db.add(obj); count+=1
-        remember_idea(db, local.get('caption_draft',''), local.get('suggested_hook'), post.detected_product_category, a.get('content_type'))
+        remember_idea(db, local_angle, suggested_hook, post.detected_product_category, content_type)
     db.commit(); return count
 
 def generate_daily_report(db: Session) -> DailyReport:

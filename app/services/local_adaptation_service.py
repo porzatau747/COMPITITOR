@@ -1,4 +1,10 @@
 def adapt_for_advice(analysis: dict) -> dict:
+    # If the AI model has dynamically generated the local adaptation, return it directly.
+    target_keys = ["local_angle", "suggested_hook", "caption_draft", "creative_direction", "sales_bridge", "cta"]
+    if all(k in analysis for k in target_keys):
+        return {k: analysis[k] for k in target_keys}
+        
+    # Fallback to static mock templates if the AI did not generate them (e.g. in Mock mode)
     cats=analysis.get("detected_product_category") or ["IT"]
     cat=" / ".join(cats)
     hook=analysis.get("hook") or "ไม่แน่ใจว่าสเปกพอไหม?"

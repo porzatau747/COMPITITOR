@@ -33,8 +33,8 @@ Traditional marketing requires manually searching local competitors or popular I
 * **Database & ORM**: SQLite (for local MVP) and PostgreSQL support (with SQLAlchemy 2.0 ORM, migrations, and transfer helper scripts)
 * **Pydantic**: Pydantic v2 Settings for configuration and schemas.
 * **Scraping Frameworks**:
-  * [Scrapling](https://github.com/scrapling/scrapling) (primary lightweight HTML scraper)
-  * [CloakBrowser](https://github.com/colbymchenry/cloakbrowser) (optional Playwright browser automation with stealth/humanize support for JS-rendered public pages)
+  * [CloakBrowser](https://github.com/colbymchenry/cloakbrowser) (primary Playwright browser automation with full stealth/bypass and humanize support for public pages)
+  * [Scrapling](https://github.com/scrapling/scrapling) (fallback lightweight HTML scraper)
   * Meta Graph API (optional for authorized Facebook Pages)
 * **AI Providers**: OpenAI SDK (compatible with generic APIs and direct Gemini content generation endpoint)
 * **Task Scheduling**: APScheduler (BackgroundScheduler) with daily cron triggers, paired with local OS-level task triggers (e.g., Hermes crontab).

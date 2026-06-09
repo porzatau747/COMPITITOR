@@ -11,7 +11,8 @@
 - Mock Collector 10 โพสต์
 - Manual Import Collector สำหรับ CSV/JSON รวมถึง template สำหรับ Facebook manual export
 - Facebook Graph Collector สำหรับ Page API ที่ได้รับสิทธิ์เท่านั้น
-- Web Agent Collector สำหรับเว็บสาธารณะ โดยใช้ Scrapling เป็น fetcher หลัก และรองรับ CloakBrowser แบบ optional สำหรับหน้า public ที่ต้อง render JavaScript
+- Web Agent Collector สำหรับเว็บสาธารณะ โดยใช้ CloakBrowser เป็น fetcher หลักในโหมด stealth/bypass เต็มรูปแบบ และมี Scrapling/httpx เป็นตัวเลือกสำรอง (Fallback)
+- Facebook Cloak Collector สำหรับดึงข้อมูลโพสต์คู่แข่งเฟซบุ๊กสาธารณะแบบอัตโนมัติ โดยใช้ CloakBrowser และเปิดโหมด stealth/bypass เต็มรูปแบบ
 - Scoring Engine: raw viral, normalized, local relevance, freshness, novelty, final score
 - AI Analyzer ต่อ Gemini/Generative Language API และ fallback เป็น mock เมื่อ API ล้มเหลว
 - Local Adaptation สำหรับ Advice สามร้อยยอด
@@ -25,8 +26,8 @@
 - Telegram message chunking กันข้อความยาวเกิน limit
 
 ยังต้องตั้งค่า/ระวังเพิ่มเติม:
-- การดึงโพสต์ Facebook จริง ใช้ ManualImportCollector หรือ API/export ที่มีสิทธิ์เท่านั้น เพื่อไม่ละเมิด ToS
-- Web Agent ดึงเฉพาะหน้าเว็บสาธารณะที่ robots.txt อนุญาต ไม่ทำ login automation, captcha solving, proxy rotation, หรือ bypass ระบบป้องกัน
+- การดึงโพสต์ Facebook จริง ทำงานแบบดึงข้อมูลอัตโนมัติเท่านั้น ผ่าน FacebookCloakCollector โดยใช้ CloakBrowser และเปิดโหมด stealth/bypass เต็มรูปแบบ
+- Web Agent ดึงข้อมูลแบบอัตโนมัติ โดยใช้ CloakBrowser และเปิดโหมด stealth/bypass เต็มรูปแบบเป็นหลัก สำหรับหน้าเว็บสาธารณะที่ robots.txt อนุญาต โดยมีระบบหน่วงเวลาเพื่อความปลอดภัย
 
 ## โครงสร้างโปรเจกต์
 
@@ -191,43 +192,39 @@ python scripts/import_manual_data.py data/facebook_competitor_posts_template.csv
 
 ## Facebook competitor data
 
-โฟกัสข้อมูลจากเพจ Facebook ได้ 2 วิธีที่ระบบรองรับ:
+ระบบรองรับการดึงข้อมูลเพจ Facebook สาธารณะของคู่แข่ง 2 รูปแบบ:
 
-1. **Manual import / Google Sheet export** — วิธีแนะนำสำหรับ MVP: เปิดโพสต์คู่แข่งที่มองเห็นได้ตามปกติ แล้วใส่ `post_url`, `post_text`, `like_count`, `comment_count`, `share_count` ลง CSV/Google Sheet แล้ว export เป็น CSV
-2. **Meta Graph API** — ใช้ `FACEBOOK_PAGE_ACCESS_TOKEN` และแก้ `data/facebook_sources.json` เฉพาะกรณี token/page นั้นมีสิทธิ์ตามกติกา Meta
-
-ระบบตั้งใจไม่ทำ personal-login scraping, browser automation หลัง login, cookie reuse, หรือ bypass protection ของ Facebook ถึงแม้จะใช้บัญชีที่ไม่เกี่ยวข้องกับร้าน เพราะยังเสี่ยงผิด ToS และทำให้ pipeline ไม่เสถียรในระยะยาว
+1. **Facebook Cloak Collector (แนะนำสำหรับระบบอัตโนมัติ)** — ดึงข้อมูลโพสต์และยอดการมีส่วนร่วม (Engagement Metrics) แบบอัตโนมัติ โดยใช้ CloakBrowser (Playwright-based) ที่ทำงานในโหมด stealth/bypass เต็มรูปแบบ และใช้คุกกี้เซสชันสาธารณะหากกำหนดไว้ใน `.env` เพื่อเลี่ยงการถูกจำกัดการเข้าถึงจาก Facebook
+2. **Meta Graph API** — ใช้ `FACEBOOK_PAGE_ACCESS_TOKEN` และกำหนดค่าที่ `data/facebook_sources.json` สำหรับกรณีเพจที่ได้รับสิทธิ์การใช้งานผ่าน API ทางการ
 
 ## Web Agent Scraper สำหรับเว็บสาธารณะ
 
-ระบบมี collector เพิ่มที่ใช้ `Scrapling` เป็นตัวดึง HTML หลัก และมี `CloakBrowser` เป็นตัวเลือกเฉพาะกรณีเว็บสาธารณะที่ต้อง render JavaScript:
+ระบบใช้งาน `WebAgentCollector` เพื่อดึงข้อมูลเว็บข่าวสารและแนวโน้มไอทีแบบอัตโนมัติ โดยใช้ `CloakBrowser` ในโหมด stealth/bypass เต็มรูปแบบเป็นตัวเปิดรันหลัก (Primary Fetcher) เพื่อความเสถียรในการดึงข้อมูล และมีระบบตรวจสอบ `robots.txt` พร้อมหน่วงเวลาคำขอเพื่อไม่ให้รบกวนเว็บไซต์ปลายทาง
 
+โครงสร้างไฟล์ที่เกี่ยวข้อง:
 ```text
 app/collectors/web_agent_collector.py
 scripts/import_web_sources.py
 data/web_sources.json
 ```
 
-หลักการใช้งาน:
-- ดึงเฉพาะ URL สาธารณะที่ไม่ต้อง login
-- ตรวจ `robots.txt` เป็นค่าเริ่มต้น
-- เว้นจังหวะ request เพื่อลดภาระเว็บปลายทาง
-- ไม่ใช้ proxy rotation, captcha solving, login automation หรือการ bypass ระบบป้องกัน
-- สำหรับ Facebook ให้ใช้ manual import / export / API ที่ได้รับสิทธิ์แทน
+หลักการทำงาน:
+- ดึงข้อมูลจาก URL สาธารณะที่กำหนดโดยอัตโนมัติ
+- ใช้ CloakBrowser เป็นหลักพร้อมการเลียนแบบพฤติกรรมมนุษย์ (humanize, geoip, stealth_args)
+- มีระบบดึงด้วย Scrapling และ httpx เป็นตัวเลือกสำรองกรณีเปิดใช้งานบราวเซอร์ไม่สำเร็จ
 
-แก้แหล่งข้อมูลได้ที่:
-
+กำหนดแหล่งข้อมูลเว็บได้ที่:
 ```text
 data/web_sources.json
 ```
 
-ตัวอย่างรัน import เว็บจริง:
-
+ตัวอย่างการสั่งรันดึงข้อมูลเว็บและประเมินคะแนนทันที:
 ```bash
-python scripts/import_web_sources.py --score
+$env:PYTHONPATH="."
+.venv\Scripts\python.exe scripts/import_web_sources.py --score
 ```
 
-ถ้า `MOCK_MODE=false` daily workflow จะใช้ Web Agent Collector และ Facebook Graph Collector โดยอัตโนมัติ; Facebook Graph จะข้ามเองถ้ายังไม่ได้ตั้ง `FACEBOOK_PAGE_ACCESS_TOKEN`
+หากตั้งค่า `MOCK_MODE=false` ตัว Daily Workflow จะเรียกใช้ Web Agent Collector, Facebook Cloak Collector และ Facebook Graph Collector ในการดึงข้อมูลโดยอัตโนมัติ
 
 ## ย้าย SQLite ไป PostgreSQL
 

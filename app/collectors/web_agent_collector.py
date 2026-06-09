@@ -181,11 +181,11 @@ class WebAgentCollector:
         return urls
 
     def fetch(self, url: str, use_browser: bool = False) -> FetchedPage:
-        if use_browser:
-            try:
-                return self._fetch_with_cloakbrowser(url)
-            except Exception as exc:
-                logger.warning("CloakBrowser fetch failed; falling back to Scrapling/httpx for %s: %s", url, exc)
+        # Default to CloakBrowser for all web fetches, and fallback to Scrapling/httpx on failure.
+        try:
+            return self._fetch_with_cloakbrowser(url)
+        except Exception as exc:
+            logger.warning("CloakBrowser fetch failed; falling back to Scrapling/httpx for %s: %s", url, exc)
         try:
             return self._fetch_with_scrapling(url)
         except Exception as exc:
@@ -220,10 +220,15 @@ class WebAgentCollector:
             return FetchedPage(url=str(response.url), html_text=response.text, fetcher="httpx")
 
     def _fetch_with_cloakbrowser(self, url: str) -> FetchedPage:
-        # Optional JS renderer for public pages only. Avoids stealth/proxy/humanize settings by design.
+        # Full stealth/bypass JS renderer for public pages.
         from cloakbrowser import launch
 
-        browser = launch(headless=True)
+        browser = launch(
+            headless=True,
+            stealth_args=True,
+            geoip=True,
+            humanize=True
+        )
         try:
             page = browser.new_page(user_agent=self.user_agent)
             page.goto(url, wait_until="networkidle", timeout=30000)

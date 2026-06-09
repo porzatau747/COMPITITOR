@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     ai_base_url: str | None = None
     ai_model: str = "gpt-4o-mini"
     facebook_page_access_token: str | None = None
+    facebook_cookie_c_user: str | None = None
+    facebook_cookie_xs: str | None = None
     admin_api_key: str | None = None
     telegram_webhook_secret: str | None = None
     allowed_telegram_chat_ids: str | None = None

@@ -118,15 +118,16 @@ class FacebookCloakCollector:
     def collect(self, db: Session, hours: int = 24) -> list[Post]:
         sources = self.load_sources()
         imported = []
+        seen_urls = set()
         for src_cfg in sources:
             try:
-                imported.extend(self.collect_source(db, src_cfg))
+                imported.extend(self.collect_source(db, src_cfg, seen_urls))
             except Exception:
                 logger.exception("Facebook cloak source failed: %s", src_cfg.url)
         db.commit()
         return imported
 
-    def collect_source(self, db: Session, src_cfg: FacebookCloakConfig) -> list[Post]:
+    def collect_source(self, db: Session, src_cfg: FacebookCloakConfig, seen_urls: set[str]) -> list[Post]:
         source = self._get_or_create_source(db, src_cfg)
         html_text = self.fetch_page(src_cfg.url)
         if not html_text:
@@ -146,13 +147,18 @@ class FacebookCloakCollector:
             if not post_data:
                 continue
                 
-            # Check if post url exists
-            if db.query(Post).filter(Post.post_url == post_data["url"]).first():
+            url = post_data["url"]
+            if url in seen_urls:
+                continue
+            # Check if post url exists in database
+            if db.query(Post).filter(Post.post_url == url).first():
+                seen_urls.add(url)
                 continue
                 
+            seen_urls.add(url)
             post = Post(
                 source_id=source.id,
-                post_url=post_data["url"],
+                post_url=url,
                 post_text=post_data["text"][:6000],
                 media_url=None,
                 posted_at=datetime.now(timezone.utc).replace(tzinfo=None), # Default to now for public posts
@@ -172,10 +178,35 @@ class FacebookCloakCollector:
         if parsed.netloc.lower() not in {"www.facebook.com", "facebook.com"}:
             raise ValueError(f"Invalid Facebook domain: {url}")
         from cloakbrowser import launch
-        browser = launch(headless=True)
+        browser = launch(
+            headless=True,
+            stealth_args=True,
+            geoip=True,
+            humanize=True
+        )
         try:
-            page = browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-            page.goto(url, wait_until="networkidle", timeout=30000)
+            context = browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            )
+            settings = get_settings()
+            if settings.facebook_cookie_c_user and settings.facebook_cookie_xs:
+                context.add_cookies([
+                    {
+                        "name": "c_user",
+                        "value": settings.facebook_cookie_c_user.strip(),
+                        "domain": ".facebook.com",
+                        "path": "/",
+                    },
+                    {
+                        "name": "xs",
+                        "value": settings.facebook_cookie_xs.strip(),
+                        "domain": ".facebook.com",
+                        "path": "/",
+                    }
+                ])
+                logger.info("Applied Facebook login cookies (c_user and xs) to Playwright context")
+            page = context.new_page()
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
             # Scroll down to load posts and bypass popup
             page.evaluate("window.scrollBy(0, 1200)")
             time.sleep(3)

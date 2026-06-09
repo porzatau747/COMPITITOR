@@ -1,4 +1,6 @@
+// =============================================
 // State Management
+// =============================================
 let config = {
     apiKey: localStorage.getItem('admin_api_key') || '',
     apiUrl: localStorage.getItem('admin_api_url') || window.location.origin
@@ -6,67 +8,60 @@ let config = {
 
 let currentTab = 'top-signals';
 
+// =============================================
 // DOM Elements
-const sourceList = document.getElementById('source-list');
-const sourceCount = document.getElementById('source-count');
-const postsList = document.getElementById('posts-list');
-const savedIdeasList = document.getElementById('saved-ideas-list');
-const consoleOutput = document.getElementById('console-output');
-const jobStatusBadge = document.getElementById('job-status-badge');
-const btnRunWorkflow = document.getElementById('btn-run-workflow');
-const btnClearLogs = document.getElementById('btn-clear-logs');
+// =============================================
+const sourceList      = document.getElementById('source-list');
+const sourceCount     = document.getElementById('source-count');
+const postsList       = document.getElementById('posts-list');
+const savedIdeasList  = document.getElementById('saved-ideas-list');
+const consoleOutput   = document.getElementById('console-output');
+const jobStatusBadge  = document.getElementById('job-status-badge');
+const btnRunWorkflow  = document.getElementById('btn-run-workflow');
+const btnClearLogs    = document.getElementById('btn-clear-logs');
 
-const btnSettings = document.getElementById('btn-settings');
-const settingsModal = document.getElementById('settings-modal');
-const btnCloseSettings = document.getElementById('btn-close-settings');
-const btnSaveSettings = document.getElementById('btn-save-settings');
-const inputApiKey = document.getElementById('input-api-key');
-const inputApiUrl = document.getElementById('input-api-url');
-const btnToggleKeyVisibility = document.getElementById('btn-toggle-key-visibility');
+const btnSettings         = document.getElementById('btn-settings');
+const settingsModal       = document.getElementById('settings-modal');
+const btnCloseSettings    = document.getElementById('btn-close-settings');
+const btnSaveSettings     = document.getElementById('btn-save-settings');
+const inputApiKey         = document.getElementById('input-api-key');
+const inputApiUrl         = document.getElementById('input-api-url');
+const btnToggleKeyVis     = document.getElementById('btn-toggle-key-visibility');
 
-// Agent Desks
-const desks = {
-    scraper: document.getElementById('desk-scraper'),
-    scoring: document.getElementById('desk-scoring'),
-    ai: document.getElementById('desk-ai'),
-    telegram: document.getElementById('desk-telegram')
+// Workstation elements (for speech bubbles)
+const workstations = {
+    scraper:  document.getElementById('ws-scraper'),
+    scoring:  document.getElementById('ws-scoring'),
+    ai:       document.getElementById('ws-ai'),
+    telegram: document.getElementById('ws-telegram'),
 };
 
-const bubbles = {
-    scraper: document.getElementById('bubble-scraper'),
-    scoring: document.getElementById('bubble-scoring'),
-    ai: document.getElementById('bubble-ai'),
-    telegram: document.getElementById('bubble-telegram')
+// Character elements
+const characters = {
+    scraper:  document.getElementById('char-scraper'),
+    scoring:  document.getElementById('char-scoring'),
+    ai:       document.getElementById('char-ai'),
+    telegram: document.getElementById('char-telegram'),
 };
 
+// =============================================
 // API Fetch Helper
+// =============================================
 async function apiCall(endpoint, method = 'GET', body = null) {
-    const headers = {
-        'Content-Type': 'application/json'
-    };
-    if (config.apiKey) {
-        headers['X-Admin-API-Key'] = config.apiKey;
-    }
+    const headers = { 'Content-Type': 'application/json' };
+    if (config.apiKey) headers['X-Admin-API-Key'] = config.apiKey;
 
-    const options = {
-        method,
-        headers
-    };
-
-    if (body) {
-        options.body = JSON.stringify(body);
-    }
+    const options = { method, headers };
+    if (body) options.body = JSON.stringify(body);
 
     const url = `${config.apiUrl}${endpoint}`;
     try {
         const response = await fetch(url, options);
         if (response.status === 401 || response.status === 403) {
-            addLog(`[ERROR] สิทธิ์การเข้าถึงถูกปฏิเสธ (401/403) กรุณาตรวจสอบ API Key ในการตั้งค่า`, 'error');
+            addLog('[ERROR] สิทธิ์การเข้าถึงถูกปฏิเสธ (401/403) กรุณาตรวจสอบ API Key ในการตั้งค่า', 'error');
             return null;
         }
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return await response.json();
     } catch (error) {
         addLog(`[ERROR] ไม่สามารถเชื่อมต่อกับหลังบ้านได้ที่ ${url} (${error.message})`, 'error');
@@ -74,80 +69,272 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     }
 }
 
-// Write to Dashboard Console log
+// =============================================
+// Console Log
+// =============================================
 function addLog(message, type = 'system') {
     const line = document.createElement('div');
     line.className = `log-line ${type}`;
-    const now = new Date().toLocaleTimeString();
+    const now = new Date().toLocaleTimeString('th-TH');
     line.innerText = `[${now}] ${message}`;
     consoleOutput.appendChild(line);
     consoleOutput.scrollTop = consoleOutput.scrollHeight;
 }
 
-// Clear logs
 btnClearLogs.addEventListener('click', () => {
     consoleOutput.innerHTML = '';
     addLog('ล้างประวัติหน้าจอสำเร็จ');
 });
 
-// Settings Modal controls
+// =============================================
+// Settings Modal
+// =============================================
 btnSettings.addEventListener('click', () => {
     inputApiKey.value = config.apiKey;
     inputApiUrl.value = config.apiUrl;
     settingsModal.classList.add('open');
 });
 
-btnCloseSettings.addEventListener('click', () => {
-    settingsModal.classList.remove('open');
-});
+btnCloseSettings.addEventListener('click', () => settingsModal.classList.remove('open'));
+settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.classList.remove('open'); });
 
-btnToggleKeyVisibility.addEventListener('click', () => {
+btnToggleKeyVis.addEventListener('click', () => {
     if (inputApiKey.type === 'password') {
         inputApiKey.type = 'text';
-        btnToggleKeyVisibility.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+        btnToggleKeyVis.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
     } else {
         inputApiKey.type = 'password';
-        btnToggleKeyVisibility.innerHTML = '<i class="fa-solid fa-eye"></i>';
+        btnToggleKeyVis.innerHTML = '<i class="fa-solid fa-eye"></i>';
     }
 });
 
 btnSaveSettings.addEventListener('click', () => {
     config.apiKey = inputApiKey.value.trim();
     config.apiUrl = inputApiUrl.value.trim() || window.location.origin;
-    
     localStorage.setItem('admin_api_key', config.apiKey);
     localStorage.setItem('admin_api_url', config.apiUrl);
-    
     settingsModal.classList.remove('open');
     addLog('บันทึกการตั้งค่าสิทธิ์เรียบร้อยแล้ว เริ่มรีโหลดข้อมูล...');
     refreshAll();
 });
 
-// Tab switching logic
+// =============================================
+// Tab Switching
+// =============================================
 const tabSignals = document.getElementById('tab-top-signals');
-const tabSaved = document.getElementById('tab-saved-ideas');
+const tabSaved   = document.getElementById('tab-saved-ideas');
 const tabContentSignals = document.getElementById('tab-content-signals');
-const tabContentSaved = document.getElementById('tab-content-saved');
+const tabContentSaved   = document.getElementById('tab-content-saved');
 
 tabSignals.addEventListener('click', () => {
-    tabSignals.classList.add('active');
-    tabSaved.classList.remove('active');
-    tabContentSignals.classList.add('active');
-    tabContentSaved.classList.remove('active');
+    tabSignals.classList.add('active');    tabSaved.classList.remove('active');
+    tabContentSignals.classList.add('active'); tabContentSaved.classList.remove('active');
     currentTab = 'top-signals';
     loadTopPosts();
 });
 
 tabSaved.addEventListener('click', () => {
-    tabSignals.classList.remove('active');
-    tabSaved.classList.add('active');
-    tabContentSignals.classList.remove('active');
-    tabContentSaved.classList.add('active');
+    tabSaved.classList.add('active');    tabSignals.classList.remove('active');
+    tabContentSaved.classList.add('active'); tabContentSignals.classList.remove('active');
     currentTab = 'saved-ideas';
     loadSavedIdeas();
 });
 
-// Fetch and Render Source Health
+// =============================================
+// CHARACTER / OFFICE ANIMATION SYSTEM
+// =============================================
+
+/**
+ * Calculate the horizontal center of a workstation element
+ * relative to the characters-layer (which spans the full width).
+ */
+function getWorkstationCenter(wsId) {
+    const ws = document.getElementById(wsId);
+    const layer = document.getElementById('characters-layer');
+    if (!ws || !layer) return null;
+    const wsRect    = ws.getBoundingClientRect();
+    const layerRect = layer.getBoundingClientRect();
+    // center of workstation relative to characters-layer left edge
+    return wsRect.left + wsRect.width / 2 - layerRect.left - 10; // -10 to center char (width≈20)
+}
+
+/** Idle positions: all characters cluster in the break-room (right side) */
+const IDLE_OFFSETS = {
+    scraper:  -105,
+    scoring:  -75,
+    ai:       -45,
+    telegram: -15,
+};
+
+function setCharIdlePositions() {
+    const layer = document.getElementById('characters-layer');
+    const layerWidth = layer ? layer.getBoundingClientRect().width : 500;
+    Object.entries(IDLE_OFFSETS).forEach(([name, offset]) => {
+        const el = characters[name];
+        if (el) el.style.left = `${layerWidth + offset}px`;
+    });
+}
+
+/**
+ * Move a character to its target workstation with walking animation,
+ * then show its speech bubble and switch to typing state.
+ *
+ * @param {string} agentName - 'scraper' | 'scoring' | 'ai' | 'telegram'
+ * @param {string} speechText - text to show in speech bubble
+ * @param {number} delay - ms to wait before starting the walk
+ */
+function walkCharacterToDesk(agentName, speechText, delay = 0) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            const char = characters[agentName];
+            const wsId = `ws-${agentName}`;
+            const ws   = workstations[agentName];
+
+            if (!char || !ws) { resolve(); return; }
+
+            // Compute destination
+            const destX = getWorkstationCenter(wsId);
+            if (destX === null) { resolve(); return; }
+
+            // Remove other states, add walking
+            char.classList.remove('idle-bounce', 'typing');
+            char.classList.add('walking');
+
+            // Compute walk duration based on distance
+            const currentLeft = parseFloat(char.style.left) || 0;
+            const distance    = Math.abs(currentLeft - destX);
+            const duration    = Math.max(400, Math.min(1200, distance * 1.5)); // 400–1200ms
+
+            // Animate by changing left (CSS transition handles easing)
+            char.style.transition = `left ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+            char.style.left = `${destX}px`;
+
+            setTimeout(() => {
+                // Arrived at desk
+                char.classList.remove('walking');
+                char.classList.add('typing');
+
+                // Activate desk speech bubble
+                ws.classList.add('active');
+                const bubble = document.getElementById(`bubble-${agentName}`);
+                if (bubble) bubble.innerText = speechText;
+
+                resolve();
+            }, duration + 50);
+
+        }, delay);
+    });
+}
+
+/** Return all characters to idle zone */
+function walkAllCharactersToIdle() {
+    const layer = document.getElementById('characters-layer');
+    const layerWidth = layer ? layer.getBoundingClientRect().width : 500;
+
+    Object.entries(characters).forEach(([name, el]) => {
+        if (!el) return;
+        el.classList.remove('typing');
+        el.classList.add('walking', 'idle-bounce');
+
+        const destX = layerWidth + IDLE_OFFSETS[name];
+        const currentLeft = parseFloat(el.style.left) || destX;
+        const distance = Math.abs(currentLeft - destX);
+        const duration = Math.max(400, Math.min(1000, distance * 1.2));
+
+        el.style.transition = `left ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+        el.style.left = `${destX}px`;
+
+        setTimeout(() => {
+            el.classList.remove('walking');
+        }, duration + 50);
+    });
+
+    // Clear all desk speech bubbles
+    Object.values(workstations).forEach(ws => ws && ws.classList.remove('active'));
+}
+
+/** Reset everything to idle state */
+function resetOffice() {
+    walkAllCharactersToIdle();
+    Object.values(workstations).forEach(ws => ws && ws.classList.remove('active'));
+}
+
+// Initialize idle positions after DOM is ready
+window.addEventListener('load', () => {
+    // Short delay so getBoundingClientRect works correctly
+    setTimeout(() => {
+        setCharIdlePositions();
+        // All chars idle-bounce while waiting
+        Object.values(characters).forEach(el => el && el.classList.add('idle-bounce'));
+    }, 100);
+});
+
+// Also reposition on resize
+window.addEventListener('resize', () => {
+    setCharIdlePositions();
+});
+
+// =============================================
+// RUN DAILY WORKFLOW
+// =============================================
+btnRunWorkflow.addEventListener('click', async () => {
+    btnRunWorkflow.disabled = true;
+    btnRunWorkflow.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังส่งคำสั่ง...';
+    jobStatusBadge.className = 'badge running';
+    jobStatusBadge.querySelector('.text').innerText = 'กำลังประมวลผล';
+
+    addLog('━━━ เริ่มสั่งรัน Daily Workflow (แมนนวล) ━━━', 'running');
+
+    // --- STEP 1: Scraper walks to desk ---
+    addLog('[Step 1/4] 🔍 น้องสปายกำลังเดินไปที่โต๊ะเพื่อดึงข้อมูล Facebook...', 'running');
+    await walkCharacterToDesk('scraper', 'กำลังดึงข้อมูลเพจ...', 0);
+
+    // Fire the actual API call while animations continue
+    const resultPromise = apiCall('/jobs/full-daily-run', 'POST');
+
+    // --- STEP 2: Scoring walks (after brief delay) ---
+    await new Promise(r => setTimeout(r, 800));
+    addLog('[Step 2/4] 🧮 น้องสคอร์กำลังเดินมาช่วยคำนวณคะแนน...', 'running');
+    await walkCharacterToDesk('scoring', 'คิดคะแนน viral!', 0);
+
+    // Wait for API result
+    const result = await resultPromise;
+
+    // --- STEP 3: AI Writer walks ---
+    await new Promise(r => setTimeout(r, 400));
+    addLog('[Step 3/4] 💡 น้องครีเอทีฟกำลังเดินมาเขียนคอนเทนต์โต้กลับ...', 'running');
+    await walkCharacterToDesk('ai', 'คิดสคริปต์แล้ว!', 0);
+
+    await new Promise(r => setTimeout(r, 600));
+
+    // --- STEP 4: Telegram sender walks ---
+    addLog('[Step 4/4] ✈️ น้องแมสเซนเจอร์กำลังเดินไปส่งรายงานเข้า Telegram...', 'running');
+    await walkCharacterToDesk('telegram', 'ส่งเข้าแชทแล้ว!', 0);
+
+    await new Promise(r => setTimeout(r, 1000));
+
+    // --- FINALIZE ---
+    if (result) {
+        addLog(`[SUCCESS] ✅ กระบวนการทั้งหมดสำเร็จ! ดึง ${result.collected || 0} โพสต์, วิเคราะห์ ${result.analyzed || 0} รายการ, รายงาน ID: ${result.report_id || 0}, ส่ง Telegram: ${result.telegram_sent ? 'สำเร็จ' : 'ไม่ส่ง'}`, 'success');
+    } else {
+        addLog('[FAIL] ❌ การรันกระบวนการล้มเหลว กรุณาตรวจสอบบันทึกเซิร์ฟเวอร์', 'error');
+    }
+
+    // Wait 2s so user can see the happy agents, then return to idle
+    await new Promise(r => setTimeout(r, 2000));
+
+    resetOffice();
+    btnRunWorkflow.disabled = false;
+    btnRunWorkflow.innerHTML = '<i class="fa-solid fa-play"></i> เริ่มสั่งรัน Daily Workflow';
+    jobStatusBadge.className = 'badge idle';
+    jobStatusBadge.querySelector('.text').innerText = 'สแตนด์บาย';
+
+    refreshAll();
+});
+
+// =============================================
+// SOURCE HEALTH
+// =============================================
 async function loadSources() {
     sourceList.innerHTML = '<div class="loading-placeholder">กำลังโหลด...</div>';
     const data = await apiCall('/sources/health');
@@ -159,7 +346,7 @@ async function loadSources() {
     const sources = data.sources || [];
     const activeSources = sources.filter(s => s.active);
     sourceCount.innerText = `${activeSources.length} / ${sources.length}`;
-    
+
     if (sources.length === 0) {
         sourceList.innerHTML = '<div class="empty-placeholder">ไม่มีแหล่งข้อมูลที่ลงทะเบียนไว้</div>';
         return;
@@ -169,23 +356,12 @@ async function loadSources() {
     sources.forEach(src => {
         const item = document.createElement('div');
         item.className = 'source-item';
-        
-        let statusClass = 'empty';
-        let statusText = 'ยังไม่ได้รัน';
-        
-        if (!src.active) {
-            statusClass = 'inactive';
-            statusText = 'ปิดใช้งาน';
-        } else if (src.health === 'ok') {
-            statusClass = 'ok';
-            statusText = 'ปกติ';
-        } else if (src.health === 'stale') {
-            statusClass = 'stale';
-            statusText = 'ข้อมูลไม่อัปเดต';
-        } else if (src.health === 'empty') {
-            statusClass = 'empty';
-            statusText = 'ไม่มีโพสต์';
-        }
+
+        let statusClass = 'empty', statusText = 'ยังไม่ได้รัน';
+        if (!src.active)            { statusClass = 'inactive'; statusText = 'ปิดใช้งาน'; }
+        else if (src.health === 'ok')     { statusClass = 'ok';       statusText = 'ปกติ'; }
+        else if (src.health === 'stale')  { statusClass = 'stale';    statusText = 'ไม่อัปเดต'; }
+        else if (src.health === 'empty')  { statusClass = 'empty';    statusText = 'ไม่มีโพสต์'; }
 
         item.innerHTML = `
             <div class="source-info">
@@ -193,7 +369,7 @@ async function loadSources() {
                 <div class="source-meta">
                     <span>${src.platform}</span>
                     <span>•</span>
-                    <a href="${src.source_url}" target="_blank" title="เปิดลิงก์" style="color: var(--text-secondary);"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <a href="${src.source_url}" target="_blank" style="color: var(--text-secondary);"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
             </div>
             <div class="source-status">
@@ -205,7 +381,9 @@ async function loadSources() {
     });
 }
 
-// Fetch and Render Top Posts (Tab 1)
+// =============================================
+// TOP POSTS (Tab 1)
+// =============================================
 async function loadTopPosts() {
     postsList.innerHTML = '<div class="loading-placeholder">กำลังโหลด...</div>';
     const posts = await apiCall('/posts/top');
@@ -215,34 +393,30 @@ async function loadTopPosts() {
     }
 
     postsList.innerHTML = '';
-    posts.forEach((post, index) => {
+    posts.forEach((post) => {
         const card = document.createElement('div');
-        
-        // Check if the post is from boosted sources
+
         const urlLower = (post.post_url || '').toLowerCase();
-        const isBoosted = urlLower.includes('advicepranburi') || 
-                          urlLower.includes('adviceprachuapkhirikhan') || 
-                          urlLower.includes('advicephetchaburi') || 
+        const isBoosted = urlLower.includes('advicepranburi') ||
+                          urlLower.includes('adviceprachuapkhirikhan') ||
+                          urlLower.includes('advicephetchaburi') ||
                           urlLower.includes('cpucore2duo');
-                          
+
         card.className = `post-card ${isBoosted ? 'priority-boost' : ''}`;
-        
-        let snippet = post.post_text || 'ไม่มีเนื้อหาข้อความ';
-        
-        // Check if analysis exists
+
         let analysisHtml = '';
         let buttonActionHtml = '';
-        
+
         if (post.analysis) {
             const ana = post.analysis;
             analysisHtml = `
                 <div class="ai-details">
                     <div class="detail-block">
-                        <span class="detail-title"><i class="fa-solid fa-quote-left"></i>Suggested Hook (พาดหัวไอเดีย)</span>
+                        <span class="detail-title"><i class="fa-solid fa-quote-left"></i> Suggested Hook (พาดหัวไอเดีย)</span>
                         <span class="detail-content">${ana.suggested_hook || 'ไม่มีพาดหัวไอเดีย'}</span>
                     </div>
                     <div class="detail-block">
-                        <span class="detail-title"><i class="fa-regular fa-lightbulb"></i>Local Angle (การปรับกลยุทธ์พื้นที่)</span>
+                        <span class="detail-title"><i class="fa-regular fa-lightbulb"></i> Local Angle (การปรับกลยุทธ์พื้นที่)</span>
                         <span class="detail-content">${ana.local_angle || 'ไม่มีแนวทาง'}</span>
                     </div>
                 </div>
@@ -250,8 +424,8 @@ async function loadTopPosts() {
             buttonActionHtml = `<button class="btn btn-secondary btn-save-idea" data-post-id="${post.id}"><i class="fa-regular fa-bookmark"></i> บันทึกไอเดีย</button>`;
         } else {
             analysisHtml = `
-                <div class="ai-details" style="text-align: center; color: var(--text-secondary); padding: 0.5rem 0;">
-                    <i class="fa-solid fa-brain-circuit"></i> โพสต์นี้ยังไม่ถูกเลือกวิเคราะห์ด้วย AI ในสรุปวันนี้
+                <div class="ai-details" style="text-align:center;color:var(--text-secondary);padding:0.5rem 0;">
+                    <i class="fa-solid fa-brain"></i> โพสต์นี้ยังไม่ถูกเลือกวิเคราะห์ด้วย AI ในสรุปวันนี้
                 </div>
             `;
         }
@@ -262,32 +436,26 @@ async function loadTopPosts() {
                 <span class="post-score-tag">คะแนน: ${post.final_score}</span>
             </div>
             <div class="post-card-body">
-                <p class="post-snippet">${snippet}</p>
+                <p class="post-snippet">${post.post_text || 'ไม่มีเนื้อหาข้อความ'}</p>
                 ${analysisHtml}
             </div>
-            <div class="post-card-footer">
-                ${buttonActionHtml}
-            </div>
+            <div class="post-card-footer">${buttonActionHtml}</div>
         `;
         postsList.appendChild(card);
     });
 
-    // Attach Save Idea Click Event
+    // Save idea buttons
     document.querySelectorAll('.btn-save-idea').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const postId = e.target.closest('button').dataset.postId;
             e.target.disabled = true;
             e.target.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> บันทึก...';
-            
-            // To save an idea, we need to call POST /ideas/save
-            // We need a report_id or we can mock/fetch today's report
+
             const todayReport = await apiCall('/reports/today');
             if (todayReport && todayReport.id) {
-                // Find matching index in report.top_posts
                 const topPostsList = todayReport.top_posts || [];
                 const postIndex = topPostsList.findIndex(p => p.id == postId);
                 if (postIndex !== -1) {
-                    // Trigger save
                     const result = await apiCall('/ideas/save', 'POST', {
                         report_id: todayReport.id,
                         idea_number: postIndex + 1
@@ -301,7 +469,7 @@ async function loadTopPosts() {
                         e.target.innerHTML = '<i class="fa-regular fa-bookmark"></i> บันทึกไอเดีย';
                     }
                 } else {
-                    addLog('[WARNING] โพสต์นี้ไม่ติดอันดับวิเคราะห์หลักในรายงานวันนี้', 'system');
+                    addLog('[WARNING] โพสต์นี้ไม่ติดอันดับวิเคราะห์หลักในรายงานวันนี้');
                     e.target.disabled = false;
                     e.target.innerHTML = '<i class="fa-regular fa-bookmark"></i> บันทึกไอเดีย';
                 }
@@ -314,7 +482,9 @@ async function loadTopPosts() {
     });
 }
 
-// Fetch and Render Saved Ideas (Tab 2)
+// =============================================
+// SAVED IDEAS (Tab 2)
+// =============================================
 async function loadSavedIdeas() {
     savedIdeasList.innerHTML = '<div class="loading-placeholder">กำลังโหลด...</div>';
     const ideas = await apiCall('/ideas/saved');
@@ -327,13 +497,12 @@ async function loadSavedIdeas() {
     ideas.forEach(idea => {
         const item = document.createElement('div');
         item.className = 'post-card';
-        
-        let statusBadge = '';
-        let buttonAction = '';
+
+        let statusBadge = '', buttonAction = '';
         if (idea.status === 'used') {
-            statusBadge = '<span class="post-score-tag" style="background: rgba(120,120,120,0.1); color: var(--text-secondary); border-color: var(--border-color);">ใช้โพสต์แล้ว</span>';
+            statusBadge = '<span class="post-score-tag" style="background:rgba(120,120,120,0.1);color:var(--text-secondary);border-color:var(--border-color);">ใช้โพสต์แล้ว</span>';
         } else {
-            statusBadge = '<span class="post-score-tag" style="background: rgba(57,255,20,0.1); color: var(--accent-neon-green); border-color: rgba(57,255,20,0.2);">รอดำเนินการ</span>';
+            statusBadge = '<span class="post-score-tag" style="background:rgba(57,255,20,0.1);color:var(--accent-neon-green);border-color:rgba(57,255,20,0.2);">รอดำเนินการ</span>';
             buttonAction = `<button class="btn btn-secondary btn-mark-used" data-idea-id="${idea.id}"><i class="fa-solid fa-check"></i> ทำเครื่องหมายว่าใช้แล้ว</button>`;
         }
 
@@ -343,23 +512,19 @@ async function loadSavedIdeas() {
                 ${statusBadge}
             </div>
             <div class="post-card-body">
-                <p style="margin-bottom: 0.5rem; font-weight: 600; color: var(--text-primary);">${idea.title || 'ไอเดียคอนเทนต์ไอที'}</p>
-                <p style="font-size: 0.8rem; line-height: 1.4; color: var(--text-secondary);">${idea.caption_draft || 'ไม่มีแคปชั่นร่าง'}</p>
+                <p style="margin-bottom:0.5rem;font-weight:600;color:var(--text-primary);">${idea.title || 'ไอเดียคอนเทนต์ไอที'}</p>
+                <p style="font-size:0.8rem;line-height:1.4;color:var(--text-secondary);">${idea.caption_draft || 'ไม่มีแคปชั่นร่าง'}</p>
             </div>
-            <div class="post-card-footer">
-                ${buttonAction}
-            </div>
+            <div class="post-card-footer">${buttonAction}</div>
         `;
         savedIdeasList.appendChild(item);
     });
 
-    // Mark as Used Action Event
     document.querySelectorAll('.btn-mark-used').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const ideaId = e.target.closest('button').dataset.ideaId;
             e.target.disabled = true;
             e.target.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> อัปเดต...';
-            
             const result = await apiCall(`/ideas/${ideaId}/used`, 'POST');
             if (result) {
                 addLog(`อัปเดตสถานะไอเดีย ID: ${ideaId} ว่าใช้โพสต์จริงเรียบร้อยแล้ว`);
@@ -372,91 +537,17 @@ async function loadSavedIdeas() {
     });
 }
 
-// 8-Bit Agent Desk Activation Controller
-function resetAgentDesks() {
-    Object.keys(desks).forEach(k => {
-        desks[k].classList.remove('active');
-    });
-}
-
-function activateAgent(agentName, textBubble) {
-    resetAgentDesks();
-    if (desks[agentName]) {
-        desks[agentName].classList.add('active');
-        if (bubbles[agentName]) {
-            bubbles[agentName].innerText = textBubble;
-        }
-    }
-}
-
-// Trigger Full Daily Workflow
-btnRunWorkflow.addEventListener('click', async () => {
-    btnRunWorkflow.disabled = true;
-    btnRunWorkflow.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังวิเคราะห์ระบบ...';
-    jobStatusBadge.className = 'badge running';
-    jobStatusBadge.querySelector('.text').innerText = 'กำลังประมวลผล';
-    
-    addLog('--- เริ่มสั่งรัน Daily Workflow (แมนนวล) ---', 'running');
-    
-    // Step 1: Scraper Agent active (fetching posts)
-    activateAgent('scraper', 'กำลังกวาดล้างและดึงเพจคู่แข่ง...');
-    addLog('[Step 1/4] เรียกใช้บอทดึงข้อมูล Facebook/Web sources...', 'running');
-    
-    // We send a request to start the full run
-    // Since it can take some time, we will run the API request
-    const result = await apiCall('/jobs/full-daily-run', 'POST');
-    
-    if (result) {
-        // Step 2: Scoring Agent active
-        activateAgent('scoring', 'ประเมินความไวรัล + โลคอลบ๊อสต์!');
-        addLog(`[Step 2/4] ดึงโพสต์รวมสำเร็จ ${result.collected || 0} โพสต์ กำลังส่งวิเคราะห์คะแนน...`, 'running');
-        
-        // Wait 1.5s to show scoring agent animation
-        await new Promise(r => setTimeout(r, 1500));
-        
-        // Step 3: AI Writer active
-        activateAgent('ai', 'ให้ AI ร่างแผนโต้ตอบการตลาดในสามร้อยยอด...');
-        addLog(`[Step 3/4] คำนวณความเหมาะสมเสร็จสิ้น กำลังส่งโพสต์ท็อป ${result.analyzed || 0} รายการให้ AI ปรับสคริปต์...`, 'running');
-        
-        // Wait 2s to show AI writing animation
-        await new Promise(r => setTimeout(r, 2000));
-        
-        // Step 4: Telegram active
-        activateAgent('telegram', 'ยิงรายงานตรงเข้า Telegram!');
-        addLog(`[Step 4/4] สร้างรายงานประจำวัน ID: ${result.report_id || 0} กำลังจัดส่งเข้าโทรศัพท์แอดมิน...`, 'running');
-        
-        // Wait 1.5s
-        await new Promise(r => setTimeout(r, 1500));
-        
-        // Finalize
-        resetAgentDesks();
-        btnRunWorkflow.disabled = false;
-        btnRunWorkflow.innerHTML = '<i class="fa-solid fa-play"></i> สั่งรัน Daily Workflow เดี๋ยวนี้';
-        jobStatusBadge.className = 'badge idle';
-        jobStatusBadge.querySelector('.text').innerText = 'สแตนด์บาย';
-        
-        addLog(`[SUCCESS] กระบวนการทั้งหมดเสร็จสมบูรณ์! ส่งเข้า Telegram สำเร็จ: ${result.telegram_sent}`, 'success');
-        refreshAll();
-    } else {
-        resetAgentDesks();
-        btnRunWorkflow.disabled = false;
-        btnRunWorkflow.innerHTML = '<i class="fa-solid fa-play"></i> สั่งรัน Daily Workflow เดี๋ยวนี้';
-        jobStatusBadge.className = 'badge error';
-        jobStatusBadge.querySelector('.text').innerText = 'เกิดข้อผิดพลาด';
-        addLog('[FAIL] การรันกระบวนการล้มเหลว กรุณาตรวจสอบบันทึกความปลอดภัยของเซิร์ฟเวอร์', 'error');
-    }
-});
-
-// Refresh all components
+// =============================================
+// REFRESH ALL PANELS
+// =============================================
 function refreshAll() {
     loadSources();
-    if (currentTab === 'top-signals') {
-        loadTopPosts();
-    } else {
-        loadSavedIdeas();
-    }
+    if (currentTab === 'top-signals') loadTopPosts();
+    else loadSavedIdeas();
 }
 
-// Initial Loading
+// =============================================
+// INITIAL LOAD
+// =============================================
 refreshAll();
-addLog('แดชบอร์ดพร้อมทำงาน ดึงสถานะเชื่อมต่อเรียบร้อย');
+addLog('แดชบอร์ดพร้อมทำงาน — พนักงานทุกคนพักรอที่ Break Room ☕');

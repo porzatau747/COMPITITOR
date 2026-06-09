@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advice Content Radar - Admin Dashboard</title>
-    <!-- Google Fonts & FontAwesome -->
+    <meta name="description" content="แดชบอร์ดแอดมินสำหรับระบบวิเคราะห์ข่าวสารและคู่แข่งรายวัน — Advice สามร้อยยอด">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -14,7 +14,7 @@
         <!-- TOP HEADER -->
         <header class="main-header">
             <div class="logo-area">
-                <i class="fa-solid fa-radar fa-spin logo-icon"></i>
+                <i class="fa-solid fa-satellite-dish fa-spin logo-icon"></i>
                 <div class="logo-text">
                     <h1>Advice Content Radar</h1>
                     <span>ระบบวิเคราะห์ข่าวสารและคู่แข่งรายวัน — Advice สามร้อยยอด</span>
@@ -36,12 +36,11 @@
             <!-- LEFT COLUMN: SOURCE HEALTH -->
             <section class="panel-card source-panel">
                 <div class="panel-header">
-                    <h2><i class="fa-solid fa-network-wired"></i> แหล่งข้อมูลคู่แข่ง (Source Health)</h2>
+                    <h2><i class="fa-solid fa-network-wired"></i> แหล่งข้อมูลคู่แข่ง</h2>
                     <span class="count-badge" id="source-count">0 / 0</span>
                 </div>
                 <div class="panel-body">
                     <div id="source-list" class="source-list">
-                        <!-- Dynamic content -->
                         <div class="loading-placeholder">กำลังโหลดแหล่งข้อมูล...</div>
                     </div>
                 </div>
@@ -51,115 +50,315 @@
             <section class="panel-card center-panel">
                 <div class="panel-header">
                     <h2><i class="fa-solid fa-store"></i> ห้องทำงานบอตวิเคราะห์ไอที (Virtual Shop)</h2>
+                    <div class="office-legend">
+                        <span class="legend-dot idle-dot"></span><span>พักรอ</span>
+                        <span class="legend-dot work-dot"></span><span>ทำงาน</span>
+                    </div>
                 </div>
                 <div class="panel-body shop-body">
                     
-                    <!-- 8-Bit Virtual Office Canvas -->
-                    <div class="virtual-office-container">
-                        <div class="office-wall"></div>
-                        <div class="office-floor">
-                            
-                            <!-- Agent 1: Scraper Desk -->
-                            <div class="agent-desk" id="desk-scraper">
-                                <div class="bubble" id="bubble-scraper">ดึงข้อมูลเพจ!</div>
-                                <svg class="pixel-agent" viewBox="0 0 32 32">
-                                    <!-- Desk & Chair -->
-                                    <rect x="4" y="22" width="24" height="6" fill="#4a3b32" />
-                                    <rect x="2" y="28" width="4" height="4" fill="#2d221c" />
-                                    <rect x="26" y="28" width="4" height="4" fill="#2d221c" />
-                                    <rect x="14" y="26" width="4" height="6" fill="#111" />
-                                    <!-- Computer Monitor -->
-                                    <rect x="8" y="14" width="12" height="8" fill="#151d2a" stroke="#fff" stroke-width="1"/>
-                                    <rect x="10" y="16" width="3" height="3" class="monitor-screen" fill="#00ffcc" />
-                                    <rect x="13" y="22" width="2" height="4" fill="#777" />
-                                    <!-- Character -->
-                                    <g class="agent-avatar typing">
-                                        <rect x="12" y="10" width="8" height="8" fill="#ffdbac" /> <!-- Head -->
-                                        <rect x="14" y="13" width="2" height="2" fill="#333" /> <!-- Eye -->
-                                        <rect x="13" y="8" width="6" height="3" fill="#1d3557" /> <!-- Hair -->
-                                        <rect x="10" y="18" width="12" height="8" fill="#e63946" /> <!-- Shirt -->
-                                        <rect x="9" y="20" width="3" height="4" class="hand-left" fill="#ffdbac" /> <!-- Hands -->
-                                        <rect x="20" y="20" width="3" height="4" class="hand-right" fill="#ffdbac" />
-                                    </g>
-                                </svg>
-                                <span class="desk-label">น้องสปาย (Scraper)</span>
-                            </div>
+                    <!-- ==================== VIRTUAL OFFICE SCENE ==================== -->
+                    <div class="virtual-office-container" id="office-scene">
 
-                            <!-- Agent 2: Scoring Desk -->
-                            <div class="agent-desk" id="desk-scoring">
-                                <div class="bubble" id="bubble-scoring">คิดคะแนนวิเคราะห์!</div>
-                                <svg class="pixel-agent" viewBox="0 0 32 32">
-                                    <!-- Desk -->
-                                    <rect x="4" y="22" width="24" height="6" fill="#3a506b" />
-                                    <rect x="2" y="28" width="4" height="4" fill="#1c2541" />
-                                    <rect x="26" y="28" width="4" height="4" fill="#1c2541" />
-                                    <!-- Gaming Server Tower -->
-                                    <rect x="22" y="12" width="5" height="10" fill="#0b0c10" stroke="#45f3ff" stroke-width="0.5" />
-                                    <circle cx="24.5" cy="15" r="1" class="led-light" fill="#39ff14" />
-                                    <circle cx="24.5" cy="18" r="1" class="led-light" fill="#ff073a" />
-                                    <!-- Character -->
-                                    <g class="agent-avatar bobbing">
-                                        <rect x="12" y="10" width="8" height="8" fill="#ffdbac" />
-                                        <rect x="14" y="13" width="2" height="2" fill="#555" />
-                                        <rect x="11" y="7" width="9" height="4" fill="#f5b041" /> <!-- Yellow cap -->
-                                        <rect x="10" y="18" width="12" height="8" fill="#1f4068" /> <!-- Blue shirt -->
-                                        <rect x="13" y="22" width="6" height="2" fill="#ffdbac" />
-                                    </g>
-                                </svg>
-                                <span class="desk-label">น้องสคอร์ (Scoring)</span>
+                        <!-- BACK WALL LAYER -->
+                        <div class="office-back-wall">
+                            <!-- Window Left -->
+                            <div class="office-window" style="left: 60px;">
+                                <div class="window-pane">
+                                    <div class="window-sky"></div>
+                                    <div class="window-sun"></div>
+                                </div>
+                                <div class="window-sill"></div>
+                                <div class="window-frame-h"></div>
+                                <div class="window-frame-v"></div>
                             </div>
-
-                            <!-- Agent 3: AI Writer Desk -->
-                            <div class="agent-desk" id="desk-ai">
-                                <div class="bubble" id="bubble-ai">คิดคอนเทนต์แป๊บ!</div>
-                                <svg class="pixel-agent" viewBox="0 0 32 32">
-                                    <!-- Desk & Lightbulb -->
-                                    <rect x="4" y="22" width="24" height="6" fill="#5d4037" />
-                                    <rect x="2" y="28" width="4" height="4" fill="#3e2723" />
-                                    <rect x="26" y="28" width="4" height="4" fill="#3e2723" />
-                                    <!-- Glowing AI Brain on monitor -->
-                                    <rect x="8" y="13" width="12" height="9" fill="#100b1a" stroke="#d500f9" stroke-width="1"/>
-                                    <path d="M12,17 C12,15 14,14 14,15 C14,14 16,14 16,15 C16,14 18,15 18,17 C18,19 14,21 14,21 Z" fill="#d500f9" class="ai-brain" />
-                                    <!-- Character -->
-                                    <g class="agent-avatar typing">
-                                        <rect x="12" y="9" width="8" height="8" fill="#f0b27a" />
-                                        <rect x="13" y="12" width="2" height="2" fill="#111" />
-                                        <rect x="12" y="6" width="8" height="3" fill="#34495e" /> <!-- Cool hair -->
-                                        <rect x="10" y="17" width="12" height="9" fill="#4a148c" /> <!-- Purple suit -->
-                                    </g>
-                                </svg>
-                                <span class="desk-label">น้องครีเอทีฟ (AI Content)</span>
+                            <!-- Whiteboard / Monitor wall -->
+                            <div class="wall-screen">
+                                <div class="wall-screen-inner">
+                                    <span class="wall-screen-text">📊 ADVICE RADAR</span>
+                                    <div class="wall-screen-graph">
+                                        <div class="graph-bar" style="height:30%;background:#00ffcc"></div>
+                                        <div class="graph-bar" style="height:55%;background:#0088cc"></div>
+                                        <div class="graph-bar" style="height:80%;background:#d500f9"></div>
+                                        <div class="graph-bar" style="height:60%;background:#ffcc00"></div>
+                                        <div class="graph-bar" style="height:45%;background:#39ff14"></div>
+                                        <div class="graph-bar" style="height:70%;background:#00ffcc"></div>
+                                    </div>
+                                </div>
                             </div>
-
-                            <!-- Agent 4: Telegram Bot Post Box -->
-                            <div class="agent-desk" id="desk-telegram">
-                                <div class="bubble" id="bubble-telegram">ส่งสรุปเข้าแชท!</div>
-                                <svg class="pixel-agent" viewBox="0 0 32 32">
-                                    <!-- Telegram Mailbox Desk -->
-                                    <rect x="8" y="20" width="16" height="8" fill="#0288d1" />
-                                    <rect x="6" y="28" width="4" height="4" fill="#01579b" />
-                                    <rect x="22" y="28" width="4" height="4" fill="#01579b" />
-                                    <!-- Paper Airplane -->
-                                    <polygon points="12,14 18,11 15,17" class="paper-plane" fill="#fff" />
-                                    <!-- Character -->
-                                    <g class="agent-avatar waving">
-                                        <rect x="12" y="10" width="8" height="8" fill="#e0a96d" />
-                                        <rect x="14" y="13" width="2" height="2" fill="#222" />
-                                        <rect x="11" y="8" width="9" height="3" fill="#111" />
-                                        <rect x="10" y="18" width="12" height="8" fill="#0088cc" /> <!-- Telegram blue shirt -->
-                                        <rect x="8" y="16" width="3" height="4" class="waving-hand" fill="#e0a96d" />
-                                    </g>
-                                </svg>
-                                <span class="desk-label">น้องแมสเซนเจอร์ (Telegram)</span>
+                            <!-- Window Right -->
+                            <div class="office-window" style="right: 60px;">
+                                <div class="window-pane">
+                                    <div class="window-sky"></div>
+                                    <div class="window-sun" style="right:8px;left:auto;background:#ffcc00;box-shadow:0 0 8px #ffcc00"></div>
+                                </div>
+                                <div class="window-sill"></div>
+                                <div class="window-frame-h"></div>
+                                <div class="window-frame-v"></div>
                             </div>
-
+                            <!-- Shop sign top -->
+                            <div class="shop-sign">🖥️ Advice IT Intelligence Center — สามร้อยยอด</div>
                         </div>
-                    </div>
+
+                        <!-- SHELF + DECOR LAYER -->
+                        <div class="office-shelf-row">
+                            <div class="shelf-unit">
+                                <div class="shelf-item book" style="background:#e63946"></div>
+                                <div class="shelf-item book" style="background:#457b9d"></div>
+                                <div class="shelf-item book" style="background:#2a9d8f"></div>
+                                <div class="shelf-item plant">🌿</div>
+                            </div>
+                            <div class="shelf-unit">
+                                <div class="shelf-item book" style="background:#f4a261"></div>
+                                <div class="shelf-item router">📡</div>
+                                <div class="shelf-item book" style="background:#264653"></div>
+                            </div>
+                            <div class="shelf-unit">
+                                <div class="shelf-item plant">🪴</div>
+                                <div class="shelf-item book" style="background:#6d6875"></div>
+                                <div class="shelf-item book" style="background:#b5838d"></div>
+                            </div>
+                        </div>
+
+                        <!-- MAIN FLOOR AREA -->
+                        <div class="office-floor-area">
+                            
+                            <!-- DESK ROW: 4 workstations -->
+                            <div class="desk-row">
+
+                                <!-- DESK 1: Scraper -->
+                                <div class="workstation" id="ws-scraper">
+                                    <div class="ws-monitor">
+                                        <div class="monitor-screen scraper-screen">
+                                            <div class="screen-lines">
+                                                <div class="sl"></div><div class="sl"></div><div class="sl"></div>
+                                                <div class="sl short"></div>
+                                            </div>
+                                        </div>
+                                        <div class="monitor-stand"></div>
+                                        <div class="monitor-base"></div>
+                                    </div>
+                                    <div class="ws-keyboard"></div>
+                                    <div class="ws-table"></div>
+                                    <div class="ws-legs">
+                                        <div class="ws-leg"></div><div class="ws-leg"></div>
+                                    </div>
+                                    <div class="ws-chair">
+                                        <div class="chair-back"></div>
+                                        <div class="chair-seat"></div>
+                                    </div>
+                                    <div class="ws-label">🔍 น้องสปาย</div>
+                                    <!-- Speech bubble anchored to desk -->
+                                    <div class="speech-bubble" id="bubble-scraper">ดึงข้อมูลเพจ!</div>
+                                </div>
+
+                                <!-- DESK 2: Scoring -->
+                                <div class="workstation" id="ws-scoring">
+                                    <div class="ws-monitor">
+                                        <div class="monitor-screen scoring-screen">
+                                            <div class="score-display">
+                                                <span class="score-num">98</span>
+                                                <div class="score-bars">
+                                                    <div class="sb" style="width:90%"></div>
+                                                    <div class="sb" style="width:60%"></div>
+                                                    <div class="sb" style="width:75%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="monitor-stand"></div>
+                                        <div class="monitor-base"></div>
+                                    </div>
+                                    <div class="ws-extra server-tower">
+                                        <div class="server-led led-green"></div>
+                                        <div class="server-led led-red"></div>
+                                        <div class="server-led led-blue"></div>
+                                        <div class="server-slot"></div>
+                                        <div class="server-slot"></div>
+                                    </div>
+                                    <div class="ws-keyboard"></div>
+                                    <div class="ws-table"></div>
+                                    <div class="ws-legs">
+                                        <div class="ws-leg"></div><div class="ws-leg"></div>
+                                    </div>
+                                    <div class="ws-chair">
+                                        <div class="chair-back"></div>
+                                        <div class="chair-seat"></div>
+                                    </div>
+                                    <div class="ws-label">🧮 น้องสคอร์</div>
+                                    <div class="speech-bubble" id="bubble-scoring">คิดคะแนน!</div>
+                                </div>
+
+                                <!-- DESK 3: AI Content -->
+                                <div class="workstation" id="ws-ai">
+                                    <div class="ws-monitor dual-monitor">
+                                        <div class="monitor-screen ai-screen">
+                                            <div class="ai-brain-anim">🧠</div>
+                                        </div>
+                                        <div class="monitor-screen ai-screen2">
+                                            <div class="screen-lines">
+                                                <div class="sl purple"></div><div class="sl purple short"></div><div class="sl purple"></div>
+                                            </div>
+                                        </div>
+                                        <div class="monitor-stand"></div>
+                                        <div class="monitor-base wide"></div>
+                                    </div>
+                                    <div class="ws-keyboard"></div>
+                                    <div class="ws-table table-wide"></div>
+                                    <div class="ws-legs">
+                                        <div class="ws-leg"></div><div class="ws-leg"></div>
+                                    </div>
+                                    <div class="ws-chair chair-fancy">
+                                        <div class="chair-back fancy"></div>
+                                        <div class="chair-seat"></div>
+                                    </div>
+                                    <div class="ws-label">💡 น้องครีเอทีฟ</div>
+                                    <div class="speech-bubble" id="bubble-ai">คิดคอนเทนต์!</div>
+                                </div>
+
+                                <!-- DESK 4: Telegram -->
+                                <div class="workstation" id="ws-telegram">
+                                    <div class="ws-monitor">
+                                        <div class="monitor-screen tg-screen">
+                                            <div class="tg-logo">✈️</div>
+                                            <div class="tg-msgs">
+                                                <div class="tg-msg"></div>
+                                                <div class="tg-msg short"></div>
+                                                <div class="tg-msg"></div>
+                                            </div>
+                                        </div>
+                                        <div class="monitor-stand"></div>
+                                        <div class="monitor-base"></div>
+                                    </div>
+                                    <div class="ws-keyboard"></div>
+                                    <div class="ws-table"></div>
+                                    <div class="ws-legs">
+                                        <div class="ws-leg"></div><div class="ws-leg"></div>
+                                    </div>
+                                    <div class="ws-chair">
+                                        <div class="chair-back" style="background:#0088cc"></div>
+                                        <div class="chair-seat"></div>
+                                    </div>
+                                    <div class="ws-label">✈️ น้องแมสเซนเจอร์</div>
+                                    <div class="speech-bubble" id="bubble-telegram">ส่งรายงาน!</div>
+                                </div>
+
+                            </div><!-- /desk-row -->
+
+                            <!-- CHARACTERS LAYER (positioned absolutely over the floor) -->
+                            <div class="characters-layer" id="characters-layer">
+                                
+                                <!-- Character 1: Scraper (สีแดง) -->
+                                <div class="character" id="char-scraper" data-target="ws-scraper">
+                                    <div class="char-body">
+                                        <div class="char-head">
+                                            <div class="char-eyes"><span></span><span></span></div>
+                                            <div class="char-mouth"></div>
+                                            <div class="char-hair hair-dark"></div>
+                                        </div>
+                                        <div class="char-torso torso-red">
+                                            <div class="char-badge">🔍</div>
+                                        </div>
+                                        <div class="char-arms">
+                                            <div class="char-arm arm-l"></div>
+                                            <div class="char-arm arm-r"></div>
+                                        </div>
+                                        <div class="char-legs">
+                                            <div class="char-leg leg-l"></div>
+                                            <div class="char-leg leg-r"></div>
+                                        </div>
+                                    </div>
+                                    <div class="char-shadow"></div>
+                                </div>
+
+                                <!-- Character 2: Scoring (สีน้ำเงิน) -->
+                                <div class="character" id="char-scoring" data-target="ws-scoring">
+                                    <div class="char-body">
+                                        <div class="char-head">
+                                            <div class="char-eyes"><span></span><span></span></div>
+                                            <div class="char-mouth"></div>
+                                            <div class="char-hair hair-yellow"></div>
+                                        </div>
+                                        <div class="char-torso torso-blue">
+                                            <div class="char-badge">🧮</div>
+                                        </div>
+                                        <div class="char-arms">
+                                            <div class="char-arm arm-l"></div>
+                                            <div class="char-arm arm-r"></div>
+                                        </div>
+                                        <div class="char-legs">
+                                            <div class="char-leg leg-l"></div>
+                                            <div class="char-leg leg-r"></div>
+                                        </div>
+                                    </div>
+                                    <div class="char-shadow"></div>
+                                </div>
+
+                                <!-- Character 3: AI (สีม่วง) -->
+                                <div class="character" id="char-ai" data-target="ws-ai">
+                                    <div class="char-body">
+                                        <div class="char-head">
+                                            <div class="char-eyes"><span></span><span></span></div>
+                                            <div class="char-mouth"></div>
+                                            <div class="char-hair hair-dark"></div>
+                                        </div>
+                                        <div class="char-torso torso-purple">
+                                            <div class="char-badge">💡</div>
+                                        </div>
+                                        <div class="char-arms">
+                                            <div class="char-arm arm-l"></div>
+                                            <div class="char-arm arm-r"></div>
+                                        </div>
+                                        <div class="char-legs">
+                                            <div class="char-leg leg-l"></div>
+                                            <div class="char-leg leg-r"></div>
+                                        </div>
+                                    </div>
+                                    <div class="char-shadow"></div>
+                                </div>
+
+                                <!-- Character 4: Telegram (สีฟ้า) -->
+                                <div class="character" id="char-telegram" data-target="ws-telegram">
+                                    <div class="char-body">
+                                        <div class="char-head">
+                                            <div class="char-eyes"><span></span><span></span></div>
+                                            <div class="char-mouth"></div>
+                                            <div class="char-hair hair-black"></div>
+                                        </div>
+                                        <div class="char-torso torso-teal">
+                                            <div class="char-badge">✈️</div>
+                                        </div>
+                                        <div class="char-arms">
+                                            <div class="char-arm arm-l"></div>
+                                            <div class="char-arm arm-r"></div>
+                                        </div>
+                                        <div class="char-legs">
+                                            <div class="char-leg leg-l"></div>
+                                            <div class="char-leg leg-r"></div>
+                                        </div>
+                                    </div>
+                                    <div class="char-shadow"></div>
+                                </div>
+
+                            </div><!-- /characters-layer -->
+
+                            <!-- IDLE ZONE: break room / coffee corner -->
+                            <div class="idle-zone">
+                                <div class="idle-sign">☕ Break Room</div>
+                                <div class="coffee-machine">☕</div>
+                                <div class="idle-couch"></div>
+                            </div>
+
+                        </div><!-- /office-floor-area -->
+
+                        <!-- FLOOR TILES -->
+                        <div class="floor-tiles"></div>
+
+                    </div><!-- /virtual-office-container -->
 
                     <!-- Action Controllers & Logs -->
                     <div class="job-controls">
                         <button id="btn-run-workflow" class="btn btn-primary btn-large">
-                            <i class="fa-solid fa-play"></i> สั่งรัน Daily Workflow เดี๋ยวนี้
+                            <i class="fa-solid fa-play"></i> เริ่มสั่งรัน Daily Workflow
                         </button>
                         <div class="log-console">
                             <div class="console-header">
@@ -215,7 +414,7 @@
                 <button class="modal-close" id="btn-close-settings">&times;</button>
             </div>
             <div class="modal-body">
-                <p class="settings-desc">หากในระบบหลังบ้านเปิดใช้งานระบบความปลอดภัย คีย์แอดมินด้านล่างนี้จะถูกนำไปส่งเป็นรหัสผ่านในทุกคำขอผ่าน Header `X-Admin-API-Key`:</p>
+                <p class="settings-desc">หากในระบบหลังบ้านเปิดใช้งานระบบความปลอดภัย คีย์แอดมินด้านล่างนี้จะถูกนำไปส่งเป็นรหัสผ่านในทุกคำขอผ่าน Header <code>X-Admin-API-Key</code>:</p>
                 <div class="form-group">
                     <label for="input-api-key">คีย์แอดมินระบบ (Admin API Key)</label>
                     <div class="input-wrapper">

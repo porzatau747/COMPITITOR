@@ -3,410 +3,622 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advice Content Radar - Admin Dashboard</title>
-    <meta name="description" content="แดชบอร์ดแอดมินสำหรับระบบวิเคราะห์ข่าวสารและคู่แข่งรายวัน — Advice สามร้อยยอด">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Advice Sam Roi Yod — Content Radar Dashboard</title>
+    <meta name="description" content="ระบบวิเคราะห์ข่าวสารคู่แข่งและจัดอันดับโพสต์รายวัน — Advice สามร้อยยอด">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Sarabun:wght@300;400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- TOP HEADER -->
-        <header class="main-header">
-            <div class="logo-area">
-                <i class="fa-solid fa-satellite-dish fa-spin logo-icon"></i>
-                <div class="logo-text">
-                    <h1>Advice Content Radar</h1>
-                    <span>ระบบวิเคราะห์ข่าวสารและคู่แข่งรายวัน — Advice สามร้อยยอด</span>
+    <div class="app-layout">
+
+        <!-- ==================== LEFT COLUMN: SIDEBAR ==================== -->
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-satellite-dish sidebar-logo-icon"></i>
+                <div class="sidebar-title">
+                    <h2>Advice Sam Roi Yod</h2>
+                    <span>Virtual Command Office</span>
                 </div>
             </div>
-            <div class="header-controls">
-                <div id="job-status-badge" class="badge idle">
-                    <span class="dot"></span> <span class="text">สแตนด์บาย</span>
+
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" id="menu-overview">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Office Overview</span>
+                </a>
+                <a href="#" class="menu-item" id="menu-posts">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Workflow Board</span>
+                </a>
+                <a href="#" class="menu-item" id="menu-sources">
+                    <i class="fa-solid fa-network-wired"></i>
+                    <span>Sources Health</span>
+                </a>
+                <a href="#" class="menu-item" id="menu-reports">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="menu-item" id="menu-settings">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="workspace-selector">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                    <div class="workspace-info">
+                        <strong>Sam Roi Yod Office</strong>
+                        <span>Main Workspace</span>
+                    </div>
                 </div>
-                <button id="btn-settings" class="btn btn-secondary">
-                    <i class="fa-solid fa-key"></i> ตั้งค่า API
-                </button>
             </div>
-        </header>
+        </aside>
 
-        <!-- MAIN LAYOUT -->
-        <main class="dashboard-grid">
-            
-            <!-- LEFT COLUMN: SOURCE HEALTH -->
-            <section class="panel-card source-panel">
-                <div class="panel-header">
-                    <h2><i class="fa-solid fa-network-wired"></i> แหล่งข้อมูลคู่แข่ง</h2>
-                    <span class="count-badge" id="source-count">0 / 0</span>
-                </div>
-                <div class="panel-body">
-                    <div id="source-list" class="source-list">
-                        <div class="loading-placeholder">กำลังโหลดแหล่งข้อมูล...</div>
+        <!-- ==================== MAIN CONTENT: CENTER AREA ==================== -->
+        <main class="main-content">
+
+            <!-- HEADER INTEGRATIONS -->
+            <header class="header-integrations">
+                <div class="integrations-list">
+                    <div class="integration-badge online">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text">Codex / Local • Online</span>
+                    </div>
+                    <div class="integration-badge connected">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text">Notion • Connected</span>
+                    </div>
+                    <div class="integration-badge connected">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text">Google Drive • Connected</span>
+                    </div>
+                    <div class="integration-badge connected">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text">Gmail • Connected</span>
+                    </div>
+                    <div class="integration-badge connected">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text">Facebook • Connected</span>
                     </div>
                 </div>
-            </section>
+                <div class="user-status-area">
+                    <div class="user-profile">
+                        <span class="user-avatar">🍿</span>
+                        <span class="user-name">Admin Sam Roi Yod</span>
+                    </div>
+                    <button id="btn-settings" class="btn btn-secondary btn-header-settings"><i class="fa-solid fa-key"></i> Settings</button>
+                </div>
+            </header>
 
-            <!-- CENTER COLUMN: VIRTUAL IT STORE & CONTROLLER -->
-            <section class="panel-card center-panel">
-                <div class="panel-header">
-                    <h2><i class="fa-solid fa-store"></i> ห้องทำงานบอตวิเคราะห์ไอที (Virtual Shop)</h2>
-                    <div class="office-legend">
-                        <span class="legend-dot idle-dot"></span><span>พักรอ</span>
-                        <span class="legend-dot work-dot"></span><span>ทำงาน</span>
+            <!-- VIEW 1: OFFICE OVERVIEW (AGENT LIVE MAP) -->
+            <div id="view-office" class="view-panel active">
+                
+                <!-- Command Center Banner -->
+                <div class="command-center-banner">
+                    <div class="banner-text">
+                        <span class="banner-tag">OFFICE OVERVIEW</span>
+                        <h2>Advice Sam Roi Yod Command Center</h2>
+                        <p>หน้าหลักสำหรับดูคิวการทำงาน สถานะบอตวิเคราะห์ และการส่งมอบข้อมูลแคมเปญร้าน Advice สามร้อยยอด</p>
+                    </div>
+                    <div class="banner-badge">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Owner verified</span>
                     </div>
                 </div>
-                <div class="panel-body shop-body">
-                    
-                    <!-- ==================== VIRTUAL OFFICE SCENE ==================== -->
-                    <div class="virtual-office-container" id="office-scene">
 
-                        <!-- BACK WALL LAYER -->
-                        <div class="office-back-wall">
-                            <!-- Window Left -->
-                            <div class="office-window" style="left: 60px;">
-                                <div class="window-pane">
-                                    <div class="window-sky"></div>
-                                    <div class="window-sun"></div>
-                                </div>
-                                <div class="window-sill"></div>
-                                <div class="window-frame-h"></div>
-                                <div class="window-frame-v"></div>
-                            </div>
-                            <!-- Whiteboard / Monitor wall -->
-                            <div class="wall-screen">
-                                <div class="wall-screen-inner">
-                                    <span class="wall-screen-text">📊 ADVICE RADAR</span>
-                                    <div class="wall-screen-graph">
-                                        <div class="graph-bar" style="height:30%;background:#00ffcc"></div>
-                                        <div class="graph-bar" style="height:55%;background:#0088cc"></div>
-                                        <div class="graph-bar" style="height:80%;background:#d500f9"></div>
-                                        <div class="graph-bar" style="height:60%;background:#ffcc00"></div>
-                                        <div class="graph-bar" style="height:45%;background:#39ff14"></div>
-                                        <div class="graph-bar" style="height:70%;background:#00ffcc"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Window Right -->
-                            <div class="office-window" style="right: 60px;">
-                                <div class="window-pane">
-                                    <div class="window-sky"></div>
-                                    <div class="window-sun" style="right:8px;left:auto;background:#ffcc00;box-shadow:0 0 8px #ffcc00"></div>
-                                </div>
-                                <div class="window-sill"></div>
-                                <div class="window-frame-h"></div>
-                                <div class="window-frame-v"></div>
-                            </div>
-                            <!-- Shop sign top -->
-                            <div class="shop-sign">🖥️ Advice IT Intelligence Center — สามร้อยยอด</div>
+                <!-- Stats Badges Row -->
+                <div class="stats-row">
+                    <div class="stat-card orange">
+                        <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-waiting">3</h3>
+                            <span>Waiting Approval</span>
                         </div>
-
-                        <!-- SHELF + DECOR LAYER -->
-                        <div class="office-shelf-row">
-                            <div class="shelf-unit">
-                                <div class="shelf-item book" style="background:#e63946"></div>
-                                <div class="shelf-item book" style="background:#457b9d"></div>
-                                <div class="shelf-item book" style="background:#2a9d8f"></div>
-                                <div class="shelf-item plant">🌿</div>
-                            </div>
-                            <div class="shelf-unit">
-                                <div class="shelf-item book" style="background:#f4a261"></div>
-                                <div class="shelf-item router">📡</div>
-                                <div class="shelf-item book" style="background:#264653"></div>
-                            </div>
-                            <div class="shelf-unit">
-                                <div class="shelf-item plant">🪴</div>
-                                <div class="shelf-item book" style="background:#6d6875"></div>
-                                <div class="shelf-item book" style="background:#b5838d"></div>
-                            </div>
+                    </div>
+                    <div class="stat-card pink">
+                        <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-attention">3</h3>
+                            <span>Need Attention</span>
                         </div>
+                    </div>
+                    <div class="stat-card teal">
+                        <div class="stat-icon"><i class="fa-solid fa-database"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-sources">8</h3>
+                            <span>Read-only Sources</span>
+                        </div>
+                    </div>
+                    <div class="stat-card blue">
+                        <div class="stat-icon"><i class="fa-solid fa-list-check"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-posts">100</h3>
+                            <span>Scraped Posts</span>
+                        </div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="stat-info">
+                            <h3>0</h3>
+                            <span>Secrets Exposed</span>
+                        </div>
+                    </div>
+                    <div class="stat-card purple">
+                        <div class="stat-icon"><i class="fa-solid fa-lock"></i></div>
+                        <div class="stat-info">
+                            <h3 id="job-status-badge-text">Standby</h3>
+                            <span>Production Release</span>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- MAIN FLOOR AREA -->
-                        <div class="office-floor-area">
+                <!-- Live Map Section -->
+                <section class="live-map-section">
+                    <div class="live-map-header">
+                        <h3><i class="fa-solid fa-map-location-dot"></i> Agent Live Map</h3>
+                        <div id="job-status-badge" class="badge idle">
+                            <span class="dot"></span><span class="text">สแตนด์บาย</span>
+                        </div>
+                    </div>
+
+                    <!-- OFFICE CONTAINER -->
+                    <div class="office-wrapper" id="office-wrapper">
+                        <div class="building-exterior">
                             
-                            <!-- DESK ROW: 4 workstations -->
-                            <div class="desk-row">
-
-                                <!-- DESK 1: Scraper -->
-                                <div class="workstation" id="ws-scraper">
-                                    <div class="ws-monitor">
-                                        <div class="monitor-screen scraper-screen">
-                                            <div class="screen-lines">
-                                                <div class="sl"></div><div class="sl"></div><div class="sl"></div>
-                                                <div class="sl short"></div>
-                                            </div>
-                                        </div>
-                                        <div class="monitor-stand"></div>
-                                        <div class="monitor-base"></div>
-                                    </div>
-                                    <div class="ws-keyboard"></div>
-                                    <div class="ws-table"></div>
-                                    <div class="ws-legs">
-                                        <div class="ws-leg"></div><div class="ws-leg"></div>
-                                    </div>
-                                    <div class="ws-chair">
-                                        <div class="chair-back"></div>
-                                        <div class="chair-seat"></div>
-                                    </div>
-                                    <div class="ws-label">🔍 น้องสปาย</div>
-                                    <!-- Speech bubble anchored to desk -->
-                                    <div class="speech-bubble" id="bubble-scraper">ดึงข้อมูลเพจ!</div>
-                                </div>
-
-                                <!-- DESK 2: Scoring -->
-                                <div class="workstation" id="ws-scoring">
-                                    <div class="ws-monitor">
-                                        <div class="monitor-screen scoring-screen">
-                                            <div class="score-display">
-                                                <span class="score-num">98</span>
-                                                <div class="score-bars">
-                                                    <div class="sb" style="width:90%"></div>
-                                                    <div class="sb" style="width:60%"></div>
-                                                    <div class="sb" style="width:75%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="monitor-stand"></div>
-                                        <div class="monitor-base"></div>
-                                    </div>
-                                    <div class="ws-extra server-tower">
-                                        <div class="server-led led-green"></div>
-                                        <div class="server-led led-red"></div>
-                                        <div class="server-led led-blue"></div>
-                                        <div class="server-slot"></div>
-                                        <div class="server-slot"></div>
-                                    </div>
-                                    <div class="ws-keyboard"></div>
-                                    <div class="ws-table"></div>
-                                    <div class="ws-legs">
-                                        <div class="ws-leg"></div><div class="ws-leg"></div>
-                                    </div>
-                                    <div class="ws-chair">
-                                        <div class="chair-back"></div>
-                                        <div class="chair-seat"></div>
-                                    </div>
-                                    <div class="ws-label">🧮 น้องสคอร์</div>
-                                    <div class="speech-bubble" id="bubble-scoring">คิดคะแนน!</div>
-                                </div>
-
-                                <!-- DESK 3: AI Content -->
-                                <div class="workstation" id="ws-ai">
-                                    <div class="ws-monitor dual-monitor">
-                                        <div class="monitor-screen ai-screen">
-                                            <div class="ai-brain-anim">🧠</div>
-                                        </div>
-                                        <div class="monitor-screen ai-screen2">
-                                            <div class="screen-lines">
-                                                <div class="sl purple"></div><div class="sl purple short"></div><div class="sl purple"></div>
-                                            </div>
-                                        </div>
-                                        <div class="monitor-stand"></div>
-                                        <div class="monitor-base wide"></div>
-                                    </div>
-                                    <div class="ws-keyboard"></div>
-                                    <div class="ws-table table-wide"></div>
-                                    <div class="ws-legs">
-                                        <div class="ws-leg"></div><div class="ws-leg"></div>
-                                    </div>
-                                    <div class="ws-chair chair-fancy">
-                                        <div class="chair-back fancy"></div>
-                                        <div class="chair-seat"></div>
-                                    </div>
-                                    <div class="ws-label">💡 น้องครีเอทีฟ</div>
-                                    <div class="speech-bubble" id="bubble-ai">คิดคอนเทนต์!</div>
-                                </div>
-
-                                <!-- DESK 4: Telegram -->
-                                <div class="workstation" id="ws-telegram">
-                                    <div class="ws-monitor">
-                                        <div class="monitor-screen tg-screen">
-                                            <div class="tg-logo">✈️</div>
-                                            <div class="tg-msgs">
-                                                <div class="tg-msg"></div>
-                                                <div class="tg-msg short"></div>
-                                                <div class="tg-msg"></div>
-                                            </div>
-                                        </div>
-                                        <div class="monitor-stand"></div>
-                                        <div class="monitor-base"></div>
-                                    </div>
-                                    <div class="ws-keyboard"></div>
-                                    <div class="ws-table"></div>
-                                    <div class="ws-legs">
-                                        <div class="ws-leg"></div><div class="ws-leg"></div>
-                                    </div>
-                                    <div class="ws-chair">
-                                        <div class="chair-back" style="background:#0088cc"></div>
-                                        <div class="chair-seat"></div>
-                                    </div>
-                                    <div class="ws-label">✈️ น้องแมสเซนเจอร์</div>
-                                    <div class="speech-bubble" id="bubble-telegram">ส่งรายงาน!</div>
-                                </div>
-
-                            </div><!-- /desk-row -->
-
-                            <!-- CHARACTERS LAYER (positioned absolutely over the floor) -->
-                            <div class="characters-layer" id="characters-layer">
+                            <!-- Rooms layout: 2 rows of 3 rooms -->
+                            <div class="rooms-grid">
                                 
-                                <!-- Character 1: Scraper (สีแดง) -->
-                                <div class="character" id="char-scraper" data-target="ws-scraper">
-                                    <div class="char-body">
-                                        <div class="char-head">
-                                            <div class="char-eyes"><span></span><span></span></div>
-                                            <div class="char-mouth"></div>
-                                            <div class="char-hair hair-dark"></div>
+                                <!-- ROW 1 -->
+                                <!-- ROOM 1: Owner Office -->
+                                <div class="office-room" id="room-owner">
+                                    <div class="room-wall-top"><span class="room-title">1. OWNER — OWNER OFFICE</span></div>
+                                    <div class="room-wall-left"></div>
+                                    <div class="room-interior">
+                                        <div class="room-decor rug" style="bottom:10px;left:15px;width:70px;height:40px;background:rgba(213,0,249,0.15);border:1px dashed var(--purple);border-radius:10px;"></div>
+                                        <div class="room-decor bookcase" style="top:5px;left:8px;">📚</div>
+                                        <div class="room-decor trophy" style="top:4px;right:8px;">🏆</div>
+                                        <div class="room-desk" style="bottom:16px;left:50%;transform:translateX(-50%)">
+                                            <div class="desk-surface">
+                                                <div class="desk-monitor"><div class="monitor-face">💻</div><div class="monitor-neck"></div></div>
+                                                <div class="desk-keyboard"></div>
+                                            </div>
+                                            <div class="desk-body"></div>
+                                            <div class="desk-legs"><span></span><span></span></div>
                                         </div>
-                                        <div class="char-torso torso-red">
-                                            <div class="char-badge">🔍</div>
+                                        <div class="room-chair" style="bottom:4px;left:50%;transform:translateX(-50%)">
+                                            <div class="chair-top" style="background:#5a2e10"></div><div class="chair-seat"></div>
                                         </div>
-                                        <div class="char-arms">
-                                            <div class="char-arm arm-l"></div>
-                                            <div class="char-arm arm-r"></div>
-                                        </div>
-                                        <div class="char-legs">
-                                            <div class="char-leg leg-l"></div>
-                                            <div class="char-leg leg-r"></div>
-                                        </div>
+                                        <div class="speech-bubble" id="bubble-owner">ดึงแนวโน้มจากคู่แข่งมาปรับใช้กับร้านเรา!</div>
                                     </div>
-                                    <div class="char-shadow"></div>
                                 </div>
 
-                                <!-- Character 2: Scoring (สีน้ำเงิน) -->
-                                <div class="character" id="char-scoring" data-target="ws-scoring">
-                                    <div class="char-body">
-                                        <div class="char-head">
-                                            <div class="char-eyes"><span></span><span></span></div>
-                                            <div class="char-mouth"></div>
-                                            <div class="char-hair hair-yellow"></div>
+                                <!-- ROOM 2: Spy Scraper -->
+                                <div class="office-room" id="room-scraper">
+                                    <div class="room-wall-top"><span class="room-title">2. MINA OPS — SPY SCRAPER</span></div>
+                                    <div class="room-wall-left"></div>
+                                    <div class="room-interior">
+                                        <div class="room-decor whiteboard" style="top:4px;left:8px;">
+                                            <div class="wb-content">
+                                                <div class="wb-line"></div><div class="wb-line short"></div><div class="wb-line"></div>
+                                            </div>
                                         </div>
-                                        <div class="char-torso torso-blue">
-                                            <div class="char-badge">🧮</div>
+                                        <div class="room-decor plant" style="top:4px;right:8px;">🌿</div>
+                                        <div class="room-desk" style="bottom:16px;left:50%;transform:translateX(-50%)">
+                                            <div class="desk-surface">
+                                                <div class="desk-monitor">
+                                                    <div class="monitor-face scraper-mon">
+                                                        <div class="mon-line g"></div><div class="mon-line g short"></div>
+                                                    </div>
+                                                    <div class="monitor-neck"></div>
+                                                </div>
+                                                <div class="desk-keyboard"></div>
+                                                <div class="desk-mug">☕</div>
+                                            </div>
+                                            <div class="desk-body"></div>
+                                            <div class="desk-legs"><span></span><span></span></div>
                                         </div>
-                                        <div class="char-arms">
-                                            <div class="char-arm arm-l"></div>
-                                            <div class="char-arm arm-r"></div>
+                                        <div class="room-chair" style="bottom:4px;left:50%;transform:translateX(-50%)">
+                                            <div class="chair-top"></div><div class="chair-seat"></div>
                                         </div>
-                                        <div class="char-legs">
-                                            <div class="char-leg leg-l"></div>
-                                            <div class="char-leg leg-r"></div>
-                                        </div>
+                                        <div class="speech-bubble" id="bubble-scraper">กำลังเช็คเพจคู่แข่ง...</div>
                                     </div>
-                                    <div class="char-shadow"></div>
                                 </div>
 
-                                <!-- Character 3: AI (สีม่วง) -->
-                                <div class="character" id="char-ai" data-target="ws-ai">
-                                    <div class="char-body">
-                                        <div class="char-head">
-                                            <div class="char-eyes"><span></span><span></span></div>
-                                            <div class="char-mouth"></div>
-                                            <div class="char-hair hair-dark"></div>
+                                <!-- ROOM 3: Score Engine -->
+                                <div class="office-room" id="room-scoring">
+                                    <div class="room-wall-top"><span class="room-title">3. LEO META — SCORE ENGINE</span></div>
+                                    <div class="room-wall-left"></div>
+                                    <div class="room-interior">
+                                        <div class="room-decor server-rack" style="top:4px;right:6px;">
+                                            <div class="srv-led green"></div><div class="srv-led red"></div>
+                                            <div class="srv-slot"></div><div class="srv-led blue"></div>
                                         </div>
-                                        <div class="char-torso torso-purple">
-                                            <div class="char-badge">💡</div>
+                                        <div class="room-decor poster" style="top:4px;left:8px;"><span>CAMPAIGN</span></div>
+                                        <div class="room-desk" style="bottom:16px;left:50%;transform:translateX(-50%)">
+                                            <div class="desk-surface">
+                                                <div class="desk-monitor">
+                                                    <div class="monitor-face scoring-mon">
+                                                        <span class="score-big">99</span>
+                                                    </div>
+                                                    <div class="monitor-neck"></div>
+                                                </div>
+                                                <div class="desk-keyboard"></div>
+                                            </div>
+                                            <div class="desk-body"></div>
+                                            <div class="desk-legs"><span></span><span></span></div>
                                         </div>
-                                        <div class="char-arms">
-                                            <div class="char-arm arm-l"></div>
-                                            <div class="char-arm arm-r"></div>
+                                        <div class="room-chair" style="bottom:4px;left:50%;transform:translateX(-50%)">
+                                            <div class="chair-top" style="background:#1f4068"></div><div class="chair-seat"></div>
                                         </div>
-                                        <div class="char-legs">
-                                            <div class="char-leg leg-l"></div>
-                                            <div class="char-leg leg-r"></div>
-                                        </div>
+                                        <div class="speech-bubble" id="bubble-scoring">คำนวณคะแนนคีย์เวิร์ด PC, Upgrade, Repair!</div>
                                     </div>
-                                    <div class="char-shadow"></div>
                                 </div>
 
-                                <!-- Character 4: Telegram (สีฟ้า) -->
-                                <div class="character" id="char-telegram" data-target="ws-telegram">
-                                    <div class="char-body">
-                                        <div class="char-head">
-                                            <div class="char-eyes"><span></span><span></span></div>
-                                            <div class="char-mouth"></div>
-                                            <div class="char-hair hair-black"></div>
+                                <!-- ROW 2 -->
+                                <!-- ROOM 4: Sam Google / Creative AI -->
+                                <div class="office-room" id="room-ai">
+                                    <div class="room-wall-top"><span class="room-title">4. SAM GOOGLE — CREATIVE AI</span></div>
+                                    <div class="room-wall-left"></div>
+                                    <div class="room-interior">
+                                        <div class="room-decor poster" style="top:4px;left:8px;background:#3a1a5a;"><span>KEYWORDS</span></div>
+                                        <div class="room-decor plant-pot" style="top:4px;right:6px;">🪴</div>
+                                        <div class="room-desk desk-wide" style="bottom:16px;left:50%;transform:translateX(-50%)">
+                                            <div class="desk-surface">
+                                                <div class="desk-monitor mon-small"><div class="monitor-face ai-mon">🧠</div><div class="monitor-neck"></div></div>
+                                                <div class="desk-monitor mon-small"><div class="monitor-face ai-mon2">💡</div><div class="monitor-neck"></div></div>
+                                                <div class="desk-keyboard"></div>
+                                            </div>
+                                            <div class="desk-body wide"></div>
+                                            <div class="desk-legs wide-legs"><span></span><span></span></div>
                                         </div>
-                                        <div class="char-torso torso-teal">
-                                            <div class="char-badge">✈️</div>
+                                        <div class="room-chair" style="bottom:4px;left:50%;transform:translateX(-50%)">
+                                            <div class="chair-top" style="background:#4a148c"></div><div class="chair-seat"></div>
                                         </div>
-                                        <div class="char-arms">
-                                            <div class="char-arm arm-l"></div>
-                                            <div class="char-arm arm-r"></div>
-                                        </div>
-                                        <div class="char-legs">
-                                            <div class="char-leg leg-l"></div>
-                                            <div class="char-leg leg-r"></div>
-                                        </div>
+                                        <div class="speech-bubble" id="bubble-ai">แต่งสคริปต์แคมเปญร้านสามร้อยยอด!</div>
                                     </div>
-                                    <div class="char-shadow"></div>
                                 </div>
 
-                            </div><!-- /characters-layer -->
+                                <!-- ROOM 5: Ava Admin / SOP Admin -->
+                                <div class="office-room" id="room-admin">
+                                    <div class="room-wall-top"><span class="room-title">5. AVA ADMIN — SYSTEM ADMIN</span></div>
+                                    <div class="room-wall-left"></div>
+                                    <div class="room-interior">
+                                        <div class="room-decor poster" style="top:4px;left:8px;"><span>TEAM WORK</span></div>
+                                        <div class="room-decor watercooler" style="top:4px;right:8px;">🧊</div>
+                                        <div class="room-desk" style="bottom:16px;left:50%;transform:translateX(-50%)">
+                                            <div class="desk-surface">
+                                                <div class="desk-monitor"><div class="monitor-face" style="background:#0a0c10;">⚙️</div><div class="monitor-neck"></div></div>
+                                                <div class="desk-keyboard"></div>
+                                                <div class="desk-notepad">📋</div>
+                                            </div>
+                                            <div class="desk-body"></div>
+                                            <div class="desk-legs"><span></span><span></span></div>
+                                        </div>
+                                        <div class="room-chair" style="bottom:4px;left:50%;transform:translateX(-50%)">
+                                            <div class="chair-top" style="background:#2a4a3a"></div><div class="chair-seat"></div>
+                                        </div>
+                                        <div class="speech-bubble" id="bubble-admin">คัดกรองข่าวสารมีมมือถือออกไป!</div>
+                                    </div>
+                                </div>
 
-                            <!-- IDLE ZONE: break room / coffee corner -->
-                            <div class="idle-zone">
-                                <div class="idle-sign">☕ Break Room</div>
-                                <div class="coffee-machine">☕</div>
-                                <div class="idle-couch"></div>
+                                <!-- ROOM 6: Support / Telegram Messenger -->
+                                <div class="office-room" id="room-telegram">
+                                    <div class="room-wall-top"><span class="room-title">6. SUPPORT — TELEGRAM SENDER</span></div>
+                                    <div class="room-wall-left"></div>
+                                    <div class="room-interior">
+                                        <div class="room-decor poster tg-poster" style="top:4px;left:8px;"><span>UPLOAD CTR</span></div>
+                                        <div class="room-decor plant" style="top:4px;right:8px;">🌿</div>
+                                        <div class="room-desk" style="bottom:16px;left:50%;transform:translateX(-50%)">
+                                            <div class="desk-surface">
+                                                <div class="desk-monitor">
+                                                    <div class="monitor-face tg-mon">
+                                                        <span class="tg-plane">✈️</span>
+                                                    </div>
+                                                    <div class="monitor-neck"></div>
+                                                </div>
+                                                <div class="desk-keyboard"></div>
+                                                <div class="desk-phone">📱</div>
+                                            </div>
+                                            <div class="desk-body"></div>
+                                            <div class="desk-legs"><span></span><span></span></div>
+                                        </div>
+                                        <div class="room-chair" style="bottom:4px;left:50%;transform:translateX(-50%)">
+                                            <div class="chair-top" style="background:#0088cc"></div><div class="chair-seat"></div>
+                                        </div>
+                                        <div class="speech-bubble" id="bubble-telegram">ส่งรายงานเข้าแชท Telegram แล้ว!</div>
+                                    </div>
+                                </div>
+
+                            </div><!-- /rooms-grid -->
+
+                            <!-- LOBBY / ENTRANCE -->
+                            <div class="building-lobby">
+                                <div class="lobby-floor">
+                                    <div class="lobby-decor welcome-mat">ADVICE OFFICE</div>
+                                    <div class="lobby-decor lobby-plant left">🌳</div>
+                                    <div class="lobby-decor lobby-plant right">🌳</div>
+                                </div>
                             </div>
 
-                        </div><!-- /office-floor-area -->
-
-                        <!-- FLOOR TILES -->
-                        <div class="floor-tiles"></div>
-
-                    </div><!-- /virtual-office-container -->
-
-                    <!-- Action Controllers & Logs -->
-                    <div class="job-controls">
-                        <button id="btn-run-workflow" class="btn btn-primary btn-large">
-                            <i class="fa-solid fa-play"></i> เริ่มสั่งรัน Daily Workflow
-                        </button>
-                        <div class="log-console">
-                            <div class="console-header">
-                                <span><i class="fa-solid fa-terminal"></i> ผลลัพธ์และประวัติประมวลผลล่าสุด</span>
-                                <button id="btn-clear-logs" title="ล้างประวัติหน้าจอ"><i class="fa-solid fa-trash-can"></i></button>
+                            <!-- ENTRANCE SIGN -->
+                            <div class="building-sign">
+                                <span class="sign-text">🖥️ ADVICE SAM ROI YOD — CONTENT RADAR</span>
                             </div>
-                            <div id="console-output" class="console-output">
-                                <div class="log-line system">ระบบสแตนด์บายเรียบร้อยแล้ว ยินดีต้อนรับสู่แดชบอร์ด Advice Content Radar.</div>
+
+                        </div><!-- /building-exterior -->
+
+                        <!-- CHARACTERS OVERLAY -->
+                        <div class="characters-overlay" id="characters-overlay">
+                            
+                            <!-- Character 1: Owner (Black suit) -->
+                            <div class="chibi-char" id="char-owner">
+                                <svg viewBox="0 0 48 72" class="chibi-svg">
+                                    <ellipse cx="24" cy="69" rx="12" ry="3" fill="rgba(0,0,0,0.15)"/>
+                                    <rect class="chibi-leg leg-l" x="14" y="54" width="8" height="13" rx="3" fill="#111"/>
+                                    <rect class="chibi-leg leg-r" x="26" y="54" width="8" height="13" rx="3" fill="#111"/>
+                                    <rect x="10" y="36" width="28" height="20" rx="5" fill="#2c3e50"/>
+                                    <text x="24" y="50" font-size="9" text-anchor="middle">🕶️</text>
+                                    <rect class="chibi-arm arm-l" x="3" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect class="chibi-arm arm-r" x="38" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect x="8" y="4" width="32" height="34" rx="10" fill="#fcd5b7"/>
+                                    <path d="M8,18 Q8,2 24,2 Q40,2 40,18 L40,10 Q40,-1 24,-1 Q8,-1 8,10Z" fill="#111"/>
+                                    <ellipse cx="17" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="31" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="18" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <ellipse cx="32" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <path d="M20,28 Q24,32 28,28" stroke="#c0784a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                </svg>
+                                <div class="chibi-name">เจ้าของร้าน</div>
                             </div>
-                        </div>
-                    </div>
 
-                </div>
-            </section>
+                            <!-- Character 2: Scraper (Mina - Orange hair, orange/cyan shirt) -->
+                            <div class="chibi-char" id="char-scraper">
+                                <svg viewBox="0 0 48 72" class="chibi-svg">
+                                    <ellipse cx="24" cy="69" rx="12" ry="3" fill="rgba(0,0,0,0.15)"/>
+                                    <rect class="chibi-leg leg-l" x="14" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect class="chibi-leg leg-r" x="26" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect x="10" y="36" width="28" height="20" rx="5" fill="#e67e22"/>
+                                    <text x="24" y="50" font-size="9" text-anchor="middle">🔍</text>
+                                    <rect class="chibi-arm arm-l" x="3" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect class="chibi-arm arm-r" x="38" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect x="8" y="4" width="32" height="34" rx="10" fill="#fcd5b7"/>
+                                    <path d="M8,18 Q8,2 24,2 Q40,2 40,18 L40,10 Q40,-1 24,-1 Q8,-1 8,10Z" fill="#d35400"/>
+                                    <ellipse cx="17" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="31" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="18" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <ellipse cx="32" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <path d="M20,28 Q24,32 28,28" stroke="#c0784a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                </svg>
+                                <div class="chibi-name">น้องสปาย</div>
+                            </div>
 
-            <!-- RIGHT COLUMN: TOP POSTS & CONTENT IDEAS -->
-            <section class="panel-card content-panel">
-                <div class="panel-header tab-header">
-                    <button class="tab-btn active" id="tab-top-signals">
-                        <i class="fa-solid fa-chart-line"></i> โพสต์ยอดฮิตวันนี้
-                    </button>
-                    <button class="tab-btn" id="tab-saved-ideas">
-                        <i class="fa-solid fa-bookmark"></i> ไอเดียที่บันทึกไว้
-                    </button>
-                </div>
-                <div class="panel-body">
+                            <!-- Character 3: Scoring (Leo - Cool dark hair, pink shirt) -->
+                            <div class="chibi-char" id="char-scoring">
+                                <svg viewBox="0 0 48 72" class="chibi-svg">
+                                    <ellipse cx="24" cy="69" rx="12" ry="3" fill="rgba(0,0,0,0.15)"/>
+                                    <rect class="chibi-leg leg-l" x="14" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect class="chibi-leg leg-r" x="26" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect x="10" y="36" width="28" height="20" rx="5" fill="#ff007f"/>
+                                    <text x="24" y="50" font-size="9" text-anchor="middle">🧮</text>
+                                    <rect class="chibi-arm arm-l" x="3" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect class="chibi-arm arm-r" x="38" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect x="8" y="4" width="32" height="34" rx="10" fill="#fcd5b7"/>
+                                    <path d="M8,18 Q8,2 24,2 Q40,2 40,18 L40,10 Q40,-1 24,-1 Q8,-1 8,10Z" fill="#1b2631"/>
+                                    <ellipse cx="17" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="31" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="18" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <ellipse cx="32" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <path d="M20,28 Q24,32 28,28" stroke="#c0784a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                </svg>
+                                <div class="chibi-name">น้องสคอร์</div>
+                            </div>
+
+                            <!-- Character 4: AI Creative (Sam - Green shirt, glasses) -->
+                            <div class="chibi-char" id="char-ai">
+                                <svg viewBox="0 0 48 72" class="chibi-svg">
+                                    <ellipse cx="24" cy="69" rx="12" ry="3" fill="rgba(0,0,0,0.15)"/>
+                                    <rect class="chibi-leg leg-l" x="14" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect class="chibi-leg leg-r" x="26" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect x="10" y="36" width="28" height="20" rx="5" fill="#2ecc71"/>
+                                    <text x="24" y="50" font-size="9" text-anchor="middle">💡</text>
+                                    <rect class="chibi-arm arm-l" x="3" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect class="chibi-arm arm-r" x="38" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect x="8" y="4" width="32" height="34" rx="10" fill="#fcd5b7"/>
+                                    <path d="M8,18 Q8,2 24,2 Q40,2 40,18 L40,10 Q40,-1 24,-1 Q8,-1 8,10Z" fill="#34495e"/>
+                                    <circle cx="17" cy="20" r="4" stroke="#111" stroke-width="1.5" fill="none"/>
+                                    <circle cx="31" cy="20" r="4" stroke="#111" stroke-width="1.5" fill="none"/>
+                                    <ellipse cx="17" cy="20" rx="1.5" ry="2" fill="#222"/>
+                                    <ellipse cx="31" cy="20" rx="1.5" ry="2" fill="#222"/>
+                                    <path d="M20,28 Q24,32 28,28" stroke="#c0784a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                </svg>
+                                <div class="chibi-name">น้องครีเอทีฟ</div>
+                            </div>
+
+                            <!-- Character 5: Admin Ava (Blonde hair, blue dress) -->
+                            <div class="chibi-char" id="char-admin">
+                                <svg viewBox="0 0 48 72" class="chibi-svg">
+                                    <ellipse cx="24" cy="69" rx="12" ry="3" fill="rgba(0,0,0,0.15)"/>
+                                    <rect class="chibi-leg leg-l" x="14" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect class="chibi-leg leg-r" x="26" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect x="10" y="36" width="28" height="20" rx="5" fill="#3498db"/>
+                                    <text x="24" y="50" font-size="9" text-anchor="middle">⚙️</text>
+                                    <rect class="chibi-arm arm-l" x="3" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect class="chibi-arm arm-r" x="38" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect x="8" y="4" width="32" height="34" rx="10" fill="#fcd5b7"/>
+                                    <path d="M8,18 Q8,2 24,2 Q40,2 40,18 L40,10 Q40,-1 24,-1 Q8,-1 8,10Z" fill="#f1c40f"/>
+                                    <ellipse cx="17" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="31" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="18" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <ellipse cx="32" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <path d="M20,28 Q24,32 28,28" stroke="#c0784a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                </svg>
+                                <div class="chibi-name">น้องแอดมิน</div>
+                            </div>
+
+                            <!-- Character 6: Telegram Messenger (Yellow cap, yellow shirt) -->
+                            <div class="chibi-char" id="char-telegram">
+                                <svg viewBox="0 0 48 72" class="chibi-svg">
+                                    <ellipse cx="24" cy="69" rx="12" ry="3" fill="rgba(0,0,0,0.15)"/>
+                                    <rect class="chibi-leg leg-l" x="14" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect class="chibi-leg leg-r" x="26" y="54" width="8" height="13" rx="3" fill="#34495e"/>
+                                    <rect x="10" y="36" width="28" height="20" rx="5" fill="#f1c40f"/>
+                                    <text x="24" y="50" font-size="9" text-anchor="middle">📦</text>
+                                    <rect class="chibi-arm arm-l" x="3" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect class="chibi-arm arm-r" x="38" y="38" width="7" height="14" rx="3.5" fill="#fcd5b7"/>
+                                    <rect x="8" y="4" width="32" height="34" rx="10" fill="#fcd5b7"/>
+                                    <path d="M8,18 Q8,2 24,2 Q40,2 40,18 L40,10 Q40,-1 24,-1 Q8,-1 8,10 Z M6,10 L42,10 L24,1 Z" fill="#e74c3c"/>
+                                    <ellipse cx="17" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="31" cy="20" rx="2.5" ry="3" fill="#222"/>
+                                    <ellipse cx="18" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <ellipse cx="32" cy="19" rx="1" ry="1" fill="#fff"/>
+                                    <path d="M20,28 Q24,32 28,28" stroke="#c0784a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                </svg>
+                                <div class="chibi-name">น้องแมสเซนเจอร์</div>
+                            </div>
+
+                        </div><!-- /characters-overlay -->
+                    </div><!-- /office-wrapper -->
+                </section>
+            </div>
+
+            <!-- VIEW 2: DATA BOARD (SOURCES, POSTS, SAVED IDEAS) -->
+            <div id="view-data" class="view-panel">
+                <div class="data-grid">
                     
-                    <!-- TAB 1: TOP SIGNALS -->
-                    <div id="tab-content-signals" class="tab-content-pane active">
-                        <div id="posts-list" class="posts-list">
-                            <div class="loading-placeholder">กำลังโหลดโพสต์ยอดฮิต...</div>
+                    <!-- Left Column inside Data view: Sources health list -->
+                    <div class="panel-card source-panel">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-network-wired"></i> แหล่งข้อมูลและเพจคู่แข่ง</h2>
+                            <span class="count-badge" id="source-count">0 / 0</span>
+                        </div>
+                        <div class="panel-body">
+                            <div id="source-list" class="source-list">
+                                <div class="loading-placeholder">กำลังโหลด...</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- TAB 2: SAVED IDEAS -->
-                    <div id="tab-content-saved" class="tab-content-pane">
-                        <div id="saved-ideas-list" class="saved-list">
-                            <div class="loading-placeholder">กำลังโหลดไอเดียที่บันทึก...</div>
+                    <!-- Right Column inside Data view: Top posts / saved ideas -->
+                    <div class="panel-card content-panel">
+                        <div class="panel-header tab-header">
+                            <button class="tab-btn active" id="tab-top-signals"><i class="fa-solid fa-chart-line"></i> โพสต์ยอดฮิตวันนี้</button>
+                            <button class="tab-btn" id="tab-saved-ideas"><i class="fa-solid fa-bookmark"></i> ไอเดียที่บันทึก</button>
+                        </div>
+                        <div class="panel-body">
+                            <div id="tab-content-signals" class="tab-content-pane active">
+                                <div id="posts-list" class="posts-list">
+                                    <div class="loading-placeholder">กำลังโหลด...</div>
+                                </div>
+                            </div>
+                            <div id="tab-content-saved" class="tab-content-pane">
+                                <div id="saved-ideas-list" class="saved-list">
+                                    <div class="loading-placeholder">กำลังโหลด...</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                 </div>
-            </section>
+            </div>
+
+            <!-- VIEW 3: REPORTS ARCHIVE -->
+            <div id="view-reports" class="view-panel">
+                <div class="panel-card full-panel">
+                    <div class="panel-header">
+                        <h2><i class="fa-solid fa-file-invoice"></i> คลังรายงานสรุปรายวัน</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div id="reports-archive-list" class="reports-archive-list">
+                            <div class="empty-placeholder">
+                                <i class="fa-solid fa-folder-open"></i>
+                                <span>กำลังพัฒนาระบบจัดเก็บถาวร สามารถเรียกดูข้อมูลวันนี้ได้ที่แถบโพสต์ยอดฮิต</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </main>
+
+        <!-- ==================== RIGHT COLUMN: TEAM CHAT ==================== -->
+        <aside class="sidebar-right">
+            <div class="chat-header">
+                <div class="chat-header-title">
+                    <h3><i class="fa-solid fa-comments"></i> Team Chat</h3>
+                    <span>#int-general</span>
+                </div>
+                <div class="user-avatars">
+                    <span>🕵️</span><span>🤖</span><span>💡</span><span>✈️</span>
+                </div>
+            </div>
+
+            <!-- Selected Agent Panel -->
+            <div class="selected-agent-panel">
+                <div class="agent-panel-header">
+                    <span class="selected-agent-avatar" id="active-agent-avatar">🤖</span>
+                    <div class="selected-agent-info">
+                        <h4 id="active-agent-title">Mina - AI Secretary</h4>
+                        <span>ดูแลสรุปงานวิเคราะห์และเตรียมข้อมูลหลัก</span>
+                    </div>
+                </div>
+                <div class="agent-panel-stats">
+                    <div class="stat-pill"><span class="label">Status</span><span class="val" id="active-agent-status">Online</span></div>
+                    <div class="stat-pill"><span class="label">Queue</span><span class="val">12 tasks</span></div>
+                    <div class="stat-pill"><span class="label">Risk</span><span class="val green">Low risk</span></div>
+                </div>
+                <div class="agent-panel-tags">
+                    <span class="tag">Notion</span>
+                    <span class="tag">Gmail</span>
+                    <span class="tag">Telegram</span>
+                </div>
+                <ul class="agent-panel-bullets" id="active-agent-bullets">
+                    <li>วิเคราะห์เนื้อหาเพจ Advice คู่แข่ง</li>
+                    <li>สกัดจุดเด่นสินค้า Notebook & PC</li>
+                    <li>เตรียมส่งรายงานแคมเปญเข้าร้าน</li>
+                </ul>
+            </div>
+
+            <!-- Chat Message Feed -->
+            <div class="chat-box">
+                <div id="console-output" class="chat-feed-container">
+                    <!-- Chat bubbles will be appended dynamically here! -->
+                    <div class="chat-msg system">
+                        <span class="msg-avatar">⚙️</span>
+                        <div class="msg-bubble-wrap">
+                            <span class="msg-sender">System Admin</span>
+                            <div class="msg-bubble">ระบบแดชบอร์ด Advice Content Radar พร้อมทำงาน บอตสแตนด์บายอยู่ที่ห้องพักค่ะ ☕</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Actions & Run Button -->
+            <div class="chat-input-area">
+                <div class="chat-input-row">
+                    <input type="text" id="chat-input-text" placeholder="พิมพ์คำสั่งสั่งงานบอตในนี้..." readonly>
+                    <button id="btn-clear-logs" class="btn-chat-icon" title="ล้างแชท"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+                <div class="agent-ask-pills">
+                    <button class="pill-ask-btn" data-agent="scraper">Ask Spy</button>
+                    <button class="pill-ask-btn" data-agent="scoring">Ask Score</button>
+                    <button class="pill-ask-btn" data-agent="ai">Ask Sam</button>
+                    <button class="pill-ask-btn" data-agent="admin">Ask Ava</button>
+                    <button class="pill-ask-btn" data-agent="telegram">Ask Messenger</button>
+                </div>
+                <div class="chat-submit-row">
+                    <button id="btn-save-to-notion" class="btn btn-secondary btn-notion-save"><i class="fa-solid fa-cloud-arrow-up"></i> Save to Notion</button>
+                    <button id="btn-run-workflow" class="btn btn-primary btn-run-workflow">
+                        <i class="fa-solid fa-play"></i> เริ่มสั่งรัน Daily Workflow
+                    </button>
+                </div>
+            </div>
+        </aside>
+
     </div>
 
-    <!-- SETTINGS MODAL -->
+    <!-- ============== SETTINGS MODAL ============== -->
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -414,20 +626,18 @@
                 <button class="modal-close" id="btn-close-settings">&times;</button>
             </div>
             <div class="modal-body">
-                <p class="settings-desc">หากในระบบหลังบ้านเปิดใช้งานระบบความปลอดภัย คีย์แอดมินด้านล่างนี้จะถูกนำไปส่งเป็นรหัสผ่านในทุกคำขอผ่าน Header <code>X-Admin-API-Key</code>:</p>
+                <p class="settings-desc">หากเปิดใช้งานระบบความปลอดภัย คีย์แอดมินจะถูกส่งเป็น Header <code>X-Admin-API-Key</code> ทุกคำขอ:</p>
                 <div class="form-group">
-                    <label for="input-api-key">คีย์แอดมินระบบ (Admin API Key)</label>
+                    <label for="input-api-key">คีย์แอดมินระบบ</label>
                     <div class="input-wrapper">
-                        <input type="password" id="input-api-key" placeholder="ป้อน Admin API Key ของคุณที่นี่ (เว้นว่างไว้หากไม่ได้ล็อก)...">
-                        <button type="button" id="btn-toggle-key-visibility" class="btn-icon">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
+                        <input type="password" id="input-api-key" placeholder="ป้อน Admin API Key...">
+                        <button type="button" id="btn-toggle-key-visibility" class="btn-icon"><i class="fa-solid fa-eye"></i></button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="input-api-url">ที่อยู่หลังบ้าน (Backend Base API URL)</label>
-                    <input type="text" id="input-api-url" placeholder="เช่น http://localhost:8010" value="">
-                    <small>ทิ้งไว้เป็นค่าว่างเพื่อเรียกใช้ที่อยู่โฮสต์ปัจจุบันโดยอัตโนมัติ</small>
+                    <label for="input-api-url">ที่อยู่หลังบ้าน (Base URL)</label>
+                    <input type="text" id="input-api-url" placeholder="เช่น http://localhost:8010">
+                    <small>เว้นว่างเพื่อใช้โฮสต์ปัจจุบัน</small>
                 </div>
             </div>
             <div class="modal-footer">

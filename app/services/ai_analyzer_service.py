@@ -92,37 +92,75 @@ def _analyze_with_gemini(prompt: str, key: str, base_url: str, model: str) -> di
     return _extract_json(text)
 
 
+_current_key_index = 0
+
+
+def _get_api_keys() -> list[str]:
+    s = get_settings()
+    raw_key = s.openai_api_key or s.ai_api_key
+    if not raw_key:
+        return []
+    import re
+    keys = []
+    for k in re.split(r'[,\n]', raw_key):
+        k_clean = k.strip()
+        if k_clean:
+            keys.append(k_clean)
+    return keys
+
+
 def analyze_post_with_ai(post, source_name: str) -> dict:
-    s=get_settings()
-    key=s.openai_api_key or s.ai_api_key
-    if not key or s.mock_mode:
+    global _current_key_index
+    s = get_settings()
+    if s.mock_mode:
         return mock_analyze_post(post, source_name)
-    prompt=_prompt(post, source_name)
-    last_error=None
-    for attempt in range(3):
+    
+    keys = _get_api_keys()
+    if not keys:
+        return mock_analyze_post(post, source_name)
+        
+    prompt = _prompt(post, source_name)
+    num_keys = len(keys)
+    last_error = None
+    
+    for attempt in range(num_keys * 2):
+        active_index = _current_key_index % num_keys
+        key = keys[active_index]
+        
         try:
             if _is_gemini_base_url(s.ai_base_url):
-                data=_analyze_with_gemini(prompt, key, s.ai_base_url or "https://generativelanguage.googleapis.com", s.ai_model)
-                data["_analysis_mode"]="ai"
+                data = _analyze_with_gemini(prompt, key, s.ai_base_url or "https://generativelanguage.googleapis.com", s.ai_model)
+                data["_analysis_mode"] = "ai"
                 return data
-            client_kwargs={"api_key": key}
-            if s.ai_base_url:
-                client_kwargs["base_url"] = s.ai_base_url
-            client=OpenAI(**client_kwargs)
-            resp=client.chat.completions.create(
-                model=s.ai_model,
-                messages=[{"role":"user", "content": prompt}],
-                temperature=0.2,
-                response_format={"type":"json_object"},
-            )
-            data=_extract_json(resp.choices[0].message.content or "{}")
-            data["_analysis_mode"]="ai"
-            return data
+            else:
+                client_kwargs = {"api_key": key}
+                if s.ai_base_url:
+                    client_kwargs["base_url"] = s.ai_base_url
+                client = OpenAI(**client_kwargs)
+                resp = client.chat.completions.create(
+                    model=s.ai_model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.2,
+                    response_format={"type": "json_object"},
+                )
+                data = _extract_json(resp.choices[0].message.content or "{}")
+                data["_analysis_mode"] = "ai"
+                return data
         except Exception as exc:
-            last_error=exc
-            logger.warning("AI analyze failed attempt %s; falling back if retries exhausted: %s", attempt+1, exc)
-    logger.error("AI analyze failed after retries; using mock analysis: %s", last_error)
+            last_error = exc
+            exc_str = str(exc)
+            is_quota_or_rate = any(token in exc_str.lower() for token in ["429", "403", "quota", "limit", "rate"])
+            if is_quota_or_rate:
+                logger.warning("Gemini API key at index %d hit quota limit. Rotating to next key. Error: %s", active_index, exc)
+            else:
+                logger.warning("AI analyze failed with key index %d. Error: %s", active_index, exc)
+            
+            # Rotate key index
+            _current_key_index = (active_index + 1) % num_keys
+            
+    logger.error("All AI API keys in pool failed; using mock analysis: %s", last_error)
     return mock_analyze_post(post, source_name)
+
 
 def analyze_post(post, source_name: str) -> dict:
     return analyze_post_with_ai(post, source_name)

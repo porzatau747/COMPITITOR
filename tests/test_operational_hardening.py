@@ -34,3 +34,67 @@ def test_telegram_message_split_preserves_text_under_limit():
     assert len(chunks) == 2
     assert all(len(chunk) <= 4096 for chunk in chunks)
     assert "".join(chunks) == text
+
+
+def test_api_key_pool_parsing(monkeypatch):
+    from app.services.ai_analyzer_service import _get_api_keys
+    from app.config import Settings
+    
+    mock_settings = Settings(
+        ai_api_key="key1, key2\nkey3 ,key4",
+        mock_mode=False
+    )
+    monkeypatch.setattr("app.services.ai_analyzer_service.get_settings", lambda: mock_settings)
+    
+    keys = _get_api_keys()
+    assert keys == ["key1", "key2", "key3", "key4"]
+
+
+def test_api_key_pool_rotation_on_failure(monkeypatch):
+    from app.services.ai_analyzer_service import analyze_post_with_ai
+    import app.services.ai_analyzer_service as ai_service
+    from app.config import Settings
+    
+    ai_service._current_key_index = 0
+    
+    mock_settings = Settings(
+        ai_api_key="bad_key1, bad_key2",
+        ai_base_url="https://generativelanguage.googleapis.com",
+        ai_model="gemini-2.5-flash",
+        mock_mode=False
+    )
+    monkeypatch.setattr("app.services.ai_analyzer_service.get_settings", lambda: mock_settings)
+    
+    called_keys = []
+    
+    def mock_analyze_gemini(prompt, key, base_url, model):
+        called_keys.append(key)
+        if key == "bad_key1":
+            raise RuntimeError("Gemini API error status=429 body=Quota exceeded")
+        return {
+            "hook": "Test Hook",
+            "hook_type": ["Pain Hook"],
+            "content_type": "IT",
+            "pain_point": "None",
+            "engagement_trigger": [],
+            "why_it_worked": "Simple",
+            "risk": [],
+            "detected_product_category": ["IT"]
+        }
+        
+    monkeypatch.setattr("app.services.ai_analyzer_service._analyze_with_gemini", mock_analyze_gemini)
+    
+    class MockPost:
+        post_text = "Notebook specification upgrades"
+        like_count = 10
+        comment_count = 5
+        share_count = 2
+        view_count = 0
+        
+    post = MockPost()
+    res = analyze_post_with_ai(post, "Test Page")
+    
+    assert called_keys == ["bad_key1", "bad_key2"]
+    assert res["hook"] == "Test Hook"
+    assert ai_service._current_key_index == 1
+

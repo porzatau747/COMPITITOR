@@ -62,6 +62,14 @@ def final_score(normalized_score: float, local_relevance: float, freshness: floa
     engagement = max(0, min(100, normalized_score))
     return round((engagement*0.4) + (local_relevance*0.4) + (freshness*0.1) + (novelty*0.1), 2)
 
+def get_source_boost(source_url: str | None) -> float:
+    if not source_url:
+        return 0.0
+    u = source_url.lower()
+    if "advicepranburi" in u or "adviceprachuapkhirikhan" in u or "advicephetchaburi" in u or "cpucore2duo" in u:
+        return 25.0
+    return 0.0
+
 def score_post(post, average_raw: float | None = None, recent_ideas: list[str] | None = None):
     raw=calculate_raw_viral_score(post.like_count, post.comment_count, post.share_count, post.view_count)
     normalized=raw / average_raw if average_raw and average_raw > 0 else raw
@@ -71,7 +79,14 @@ def score_post(post, average_raw: float | None = None, recent_ideas: list[str] |
     post.raw_viral_score=raw
     post.normalized_score=normalized
     post.local_relevance_score=local
-    post.final_score=final_score(normalized, local, fresh, novel)
+    
+    boost = 0.0
+    if hasattr(post, "source") and post.source:
+        boost = get_source_boost(post.source.source_url)
+        
+    base_final = final_score(normalized, local, fresh, novel)
+    post.final_score = min(100.0, base_final + boost)
+    
     cats=detect_categories(post.post_text)
     post.detected_product_category=", ".join(cats) if cats else None
     return post

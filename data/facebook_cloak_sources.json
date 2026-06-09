@@ -98,6 +98,17 @@
       "priority_score": 85,
       "limit_posts": 5,
       "active": true
+    },
+    {
+      "name": "Advice Phetchaburi",
+      "url": "https://www.facebook.com/AdvicePhetchaburi",
+      "platform": "facebook_cloak",
+      "source_type": "facebook_page_public",
+      "category": "IT Retail",
+      "location": "Phetchaburi",
+      "priority_score": 85,
+      "limit_posts": 5,
+      "active": true
     }
   ]
 }

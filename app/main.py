@@ -21,3 +21,9 @@ def telegram_webhook(
     msg=(update.get('message') or {}).get('text') or ''
     return {"reply": handle_command(db,msg)}
 app.include_router(sources.router, dependencies=[Depends(require_admin_api_key_header)]); app.include_router(posts.router, dependencies=[Depends(require_admin_api_key_header)]); app.include_router(reports.router, dependencies=[Depends(require_admin_api_key_header)]); app.include_router(ideas.router, dependencies=[Depends(require_admin_api_key_header)]); app.include_router(jobs.router, dependencies=[Depends(require_admin_api_key_header)])
+
+from fastapi.staticfiles import StaticFiles
+import os
+static_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")
+app.mount("/dashboard", StaticFiles(directory=static_path, html=True), name="static")
+

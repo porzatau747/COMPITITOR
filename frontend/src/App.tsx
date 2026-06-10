@@ -652,84 +652,90 @@ function App() {
           </h2>
         </div>
 
-        <div className="panel-body">
-          {/* AI Metrics Category Radar */}
-          <div className="metrics-section">
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Top Content Categories</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              <div className="metric-bar-group">
-                <div className="metric-header">
-                  <span className="metric-label">PC ประกอบ & สเปคคอม</span>
-                  <span className="metric-val">95%</span>
+        <div className="panel-body" style={{ padding: 0, overflow: 'hidden', gap: 0 }}>
+          {/* === Fixed Top Section: Metrics + Agent Card === */}
+          <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', flexShrink: 0, borderBottom: '1px solid var(--border-color)', overflowY: 'auto', maxHeight: '55%' }}>
+            {/* AI Metrics Category Radar */}
+            <div className="metrics-section">
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Top Content Categories</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <div className="metric-bar-group">
+                  <div className="metric-header">
+                    <span className="metric-label">PC ประกอบ & สเปคคอม</span>
+                    <span className="metric-val">95%</span>
+                  </div>
+                  <div className="metric-track">
+                    <div className="metric-fill cyan" style={{ width: '95%' }}></div>
+                  </div>
                 </div>
-                <div className="metric-track">
-                  <div className="metric-fill cyan" style={{ width: '95%' }}></div>
+                <div className="metric-bar-group">
+                  <div className="metric-header">
+                    <span className="metric-label">การซ่อมคอม & อัปเกรดเครื่อง</span>
+                    <span className="metric-val">82%</span>
+                  </div>
+                  <div className="metric-track">
+                    <div className="metric-fill purple" style={{ width: '82%' }}></div>
+                  </div>
                 </div>
-              </div>
-              <div className="metric-bar-group">
-                <div className="metric-header">
-                  <span className="metric-label">การซ่อมคอม & อัปเกรดเครื่อง</span>
-                  <span className="metric-val">82%</span>
+                <div className="metric-bar-group">
+                  <div className="metric-header">
+                    <span className="metric-label">กล้องวงจรปิด CCTV</span>
+                    <span className="metric-val">70%</span>
+                  </div>
+                  <div className="metric-track">
+                    <div className="metric-fill amber" style={{ width: '70%' }}></div>
+                  </div>
                 </div>
-                <div className="metric-track">
-                  <div className="metric-fill purple" style={{ width: '82%' }}></div>
+                <div className="metric-bar-group">
+                  <div className="metric-header">
+                    <span className="metric-label">โน้ตบุ๊ก & ปริ้นเตอร์</span>
+                    <span className="metric-val">64%</span>
+                  </div>
+                  <div className="metric-track">
+                    <div className="metric-fill emerald" style={{ width: '64%' }}></div>
+                  </div>
                 </div>
-              </div>
-              <div className="metric-bar-group">
-                <div className="metric-header">
-                  <span className="metric-label">กล้องวงจรปิด CCTV</span>
-                  <span className="metric-val">70%</span>
-                </div>
-                <div className="metric-track">
-                  <div className="metric-fill amber" style={{ width: '70%' }}></div>
-                </div>
-              </div>
-              <div className="metric-bar-group">
-                <div className="metric-header">
-                  <span className="metric-label">โน้ตบุ๊ก & ปริ้นเตอร์</span>
-                  <span className="metric-val">64%</span>
-                </div>
-                <div className="metric-track">
-                  <div className="metric-fill emerald" style={{ width: '64%' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Active Clicked Agent panel */}
-          {selectedAgent && (
-            <div className="agent-card">
-              <div className="agent-card-avatar">{selectedAgent.avatar}</div>
-              <div className="agent-card-info">
-                <h3>{selectedAgent.title}</h3>
-                <span className="agent-card-desc">{selectedAgent.desc}</span>
-                <ul className="agent-bullets">
-                  {selectedAgent.bullets.map((b, idx) => (
-                    <li key={idx}>{b}</li>
-                  ))}
-                </ul>
               </div>
             </div>
-          )}
 
-          {/* Signals / Saved Ideas Tabs */}
-          <div className="tabs-container">
-            <button 
-              className={`tab-btn ${activeTab === 'posts' ? 'active' : ''}`}
-              onClick={() => setActiveTab('posts')}
-            >
-              Competitor Signals
-            </button>
-            <button 
-              className={`tab-btn ${activeTab === 'saved' ? 'active' : ''}`}
-              onClick={() => setActiveTab('saved')}
-            >
-              Saved Ideas ({savedIdeas.filter(i => i.status === 'saved').length})
-            </button>
-          </div>
+            {/* Active Clicked Agent panel */}
+            {selectedAgent && (
+              <div className="agent-card">
+                <div className="agent-card-avatar">{selectedAgent.avatar}</div>
+                <div className="agent-card-info">
+                  <h3>{selectedAgent.title}</h3>
+                  <span className="agent-card-desc">{selectedAgent.desc}</span>
+                  <ul className="agent-bullets">
+                    {selectedAgent.bullets.map((b, idx) => (
+                      <li key={idx}>{b}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div> {/* end fixed top section */}
 
-          {/* Tabs Content */}
-          <div style={{ flexGrow: 1, overflowY: 'auto' }}>
+          {/* === Scrollable Bottom Section: Tabs + Post List === */}
+          <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflow: 'hidden' }}>
+
+            {/* Signals / Saved Ideas Tabs */}
+            <div className="tabs-container" style={{ flexShrink: 0, margin: '0 1.25rem' }}>
+              <button
+                className={`tab-btn ${activeTab === 'posts' ? 'active' : ''}`}
+                onClick={() => setActiveTab('posts')}
+              >
+                Competitor Signals
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'saved' ? 'active' : ''}`}
+                onClick={() => setActiveTab('saved')}
+              >
+                Saved Ideas ({savedIdeas.filter(i => i.status === 'saved').length})
+              </button>
+            </div>
+
+            {/* Tabs Content — independently scrollable */}
+            <div style={{ flexGrow: 1, overflowY: 'auto', padding: '0 1.25rem 1.25rem' }}>
             {activeTab === 'posts' ? (
               <div className="signals-list">
                 {topPosts.length === 0 ? (
@@ -829,7 +835,8 @@ function App() {
                 )}
               </div>
             )}
-          </div>
+            </div>
+          </div> {/* end scrollable bottom section */}
         </div>
       </aside>
 

@@ -1,31 +1,156 @@
 # Agent Bootstrap
 
-Before doing any task:
+Before performing ANY task:
 
-1. Read:
+## 1. Read Project Context
 
-   * .ai/coding-rules.md
+Read the following files in order:
 
-2. Summarize:
+1. .ai/project-context.md
+2. .ai/architecture.md
+3. .ai/project-map.md
+4. .ai/coding-rules.md
+5. .ai/karpathy-skills.md
 
-   * project purpose
-   * architecture
-   * affected modules
+Do not start implementation until all files are read.
 
-3. Follow all coding rules.
+---
 
-4. If the task involves:
+## 2. Build Working Context
 
-   * agents
-   * services
-   * APIs
-   * database
-   * shared utilities
+Summarize:
 
-   Run CodeGraph analysis first.
+* project purpose
+* architecture overview
+* relevant services
+* affected modules
+* dependencies
+* possible side effects
 
-5. Explain the implementation plan before editing.
+Identify what parts of the system may be impacted.
 
-6. Do not modify code until analysis is complete.
+---
 
-7. Create a git checkpoint before major changes.
+## 3. Follow Project Rules
+
+Follow ALL rules defined in:
+
+* coding-rules.md
+* karpathy-skills.md
+
+If instructions conflict:
+
+1. coding-rules.md
+2. architecture.md
+3. karpathy-skills.md
+
+in that priority order.
+
+---
+
+## 4. Perform Impact Analysis
+
+Before modifying code:
+
+### For business logic changes
+
+Run:
+
+* CodeGraph Context
+* CodeGraph Callers
+* CodeGraph Callees
+* CodeGraph Impact Analysis
+
+### For API changes
+
+Identify:
+
+* callers
+* consumers
+* request/response contracts
+
+### For database changes
+
+Identify:
+
+* migrations
+* repositories
+* services
+* API impact
+
+### For shared utilities
+
+Identify all dependent modules.
+
+Do not edit code until impact analysis is complete.
+
+---
+
+## 5. Create Implementation Plan
+
+Explain:
+
+* what will be changed
+* why it is needed
+* affected files
+* risks
+* migration requirements
+
+Wait for confirmation if the change is large or risky.
+
+---
+
+## 6. Create Safety Checkpoint
+
+Before major modifications:
+
+```bash
+git status
+git add -A
+git commit -m "checkpoint: before <task>"
+```
+
+or create an equivalent checkpoint.
+
+---
+
+## 7. Implement Incrementally
+
+Prefer:
+
+* small commits
+* minimal diffs
+* reversible changes
+
+Avoid large-scale rewrites unless explicitly requested.
+
+---
+
+## 8. Verify Changes
+
+After implementation:
+
+* run tests
+* run lint
+* verify build
+* verify impacted workflows
+
+Report:
+
+* files changed
+* impact summary
+* verification results
+
+---
+
+## 9. Never Assume
+
+If required information is missing:
+
+* inspect the codebase
+* inspect architecture
+* inspect callers
+
+Do not invent behavior.
+Do not guess APIs.
+Do not guess data structures.

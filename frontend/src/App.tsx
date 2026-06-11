@@ -594,8 +594,6 @@ function App() {
               onRotateSelected={() => {}}
               onDragMove={() => {}}
               editorTick={editorTick}
-              zoom={zoom}
-              onZoomChange={setZoom}
               panRef={panRef}
             />
           ) : (

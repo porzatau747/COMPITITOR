@@ -36,8 +36,6 @@ interface OfficeCanvasProps {
   onRotateSelected: () => void;
   onDragMove: (uid: string, newCol: number, newRow: number) => void;
   editorTick: number;
-  zoom: number;
-  onZoomChange: (zoom: number) => void;
   panRef: React.MutableRefObject<{ x: number; y: number }>;
 }
 
@@ -53,8 +51,6 @@ export function OfficeCanvas({
   onRotateSelected,
   onDragMove,
   editorTick: _editorTick,
-  zoom,
-  onZoomChange,
   panRef,
 }: OfficeCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -68,11 +64,7 @@ export function OfficeCanvas({
   const rotateButtonBoundsRef = useRef<RotateButtonBounds | null>(null);
   // Right-click erase dragging
   const isEraseDraggingRef = useRef(false);
-  // Zoom scroll accumulator for trackpad pinch sensitivity
-  const zoomAccumulatorRef = useRef(0);
-  const lastAutoZoomRef = useRef<number | null>(null);
-  const currentZoomRef = useRef(zoom);
-  currentZoomRef.current = zoom;
+  const zoomRef = useRef(1);
 
   // Clamp pan so the map edge can't go past a margin inside the viewport
   const clampPan = useCallback(
@@ -80,8 +72,8 @@ export function OfficeCanvas({
       const canvas = canvasRef.current;
       if (!canvas) return { x: px, y: py };
       const layout = officeState.getLayout();
-      const mapW = layout.cols * TILE_SIZE * zoom;
-      const mapH = layout.rows * TILE_SIZE * zoom;
+      const mapW = layout.cols * TILE_SIZE * zoomRef.current;
+      const mapH = layout.rows * TILE_SIZE * zoomRef.current;
       const marginX = canvas.width * PAN_MARGIN_FRACTION;
       const marginY = canvas.height * PAN_MARGIN_FRACTION;
       const maxPanX = mapW / 2 + canvas.width / 2 - marginX;
@@ -91,7 +83,7 @@ export function OfficeCanvas({
         y: Math.max(-maxPanY, Math.min(maxPanY, py)),
       };
     },
-    [officeState, zoom],
+    [officeState],
   );
 
   // Resize canvas backing store to device pixels (no DPR transform on ctx)
@@ -106,28 +98,17 @@ export function OfficeCanvas({
     canvas.style.width = `${rect.width}px`;
     canvas.style.height = `${rect.height}px`;
 
-    // Auto-fit zoom on mount/resize
+    // Auto-fit zoom on mount/resize (no padding around the map)
     if (rect.width > 0 && rect.height > 0) {
       const layout = officeState.getLayout();
       const mapW = layout.cols * TILE_SIZE;
       const mapH = layout.rows * TILE_SIZE;
-      const padding = 40;
-      const maxW = rect.width - padding;
-      const maxH = rect.height - padding;
-      let optimalZoom = Math.min(maxW / mapW, maxH / mapH);
+      let optimalZoom = Math.min(rect.width / mapW, rect.height / mapH);
       optimalZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, optimalZoom));
-      optimalZoom = Math.round(optimalZoom * 10) / 10;
-
-      const isFirstAutoFit = lastAutoZoomRef.current === null;
-      const userHasNotManuallyZoomed =
-        lastAutoZoomRef.current !== null && currentZoomRef.current === lastAutoZoomRef.current;
-
-      if (isFirstAutoFit || userHasNotManuallyZoomed) {
-        onZoomChange(optimalZoom);
-        lastAutoZoomRef.current = optimalZoom;
-      }
+      optimalZoom = Math.floor(optimalZoom * 100) / 100;
+      zoomRef.current = optimalZoom;
     }
-  }, [officeState, onZoomChange]);
+  }, [officeState]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -285,7 +266,7 @@ export function OfficeCanvas({
           officeState.tileMap,
           officeState.furniture,
           officeState.getCharacters(),
-          zoom,
+          zoomRef.current,
           panRef.current.x,
           panRef.current.y,
           selectionRender,
@@ -306,7 +287,7 @@ export function OfficeCanvas({
       stop();
       observer.disconnect();
     };
-  }, [officeState, resizeCanvas, isEditMode, editorState, _editorTick, zoom, panRef]);
+  }, [officeState, resizeCanvas, isEditMode, editorState, _editorTick, panRef]);
 
   // Convert CSS mouse coords to world (sprite pixel) coords
   const screenToWorld = useCallback(
@@ -322,11 +303,11 @@ export function OfficeCanvas({
       const deviceX = cssX * dpr;
       const deviceY = cssY * dpr;
       // Convert to world (sprite pixel) coords
-      const worldX = (deviceX - offsetRef.current.x) / zoom;
-      const worldY = (deviceY - offsetRef.current.y) / zoom;
+      const worldX = (deviceX - offsetRef.current.x) / zoomRef.current;
+      const worldY = (deviceY - offsetRef.current.y) / zoomRef.current;
       return { worldX, worldY, screenX: cssX, screenY: cssY, deviceX, deviceY };
     },
-    [zoom],
+    [],
   );
 
   const screenToTile = useCallback(

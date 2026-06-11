@@ -242,7 +242,8 @@ export function OfficeCanvas({
           }
         }
 
-        // Camera follow: smoothly center on followed agent
+        // Camera follow: smoothly center on followed agent (disabled to lock camera)
+        /*
         if (officeState.cameraFollowId !== null) {
           const followCh = officeState.characters.get(officeState.cameraFollowId);
           if (followCh) {
@@ -266,6 +267,7 @@ export function OfficeCanvas({
             }
           }
         }
+        */
 
         // Build selection render state
         const selectionRender: SelectionRenderState = {
@@ -523,20 +525,9 @@ export function OfficeCanvas({
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       unlockAudio();
-      // Middle mouse button (button 1) starts panning
+      // Middle mouse button (button 1) starts panning (disabled to lock camera)
       if (e.button === 1) {
         e.preventDefault();
-        // Break camera follow on manual pan
-        officeState.cameraFollowId = null;
-        isPanningRef.current = true;
-        panStartRef.current = {
-          mouseX: e.clientX,
-          mouseY: e.clientY,
-          panX: panRef.current.x,
-          panY: panRef.current.y,
-        };
-        const canvas = canvasRef.current;
-        if (canvas) canvas.style.cursor = 'grabbing';
         return;
       }
 
@@ -789,32 +780,12 @@ export function OfficeCanvas({
     [isEditMode, officeState, screenToTile],
   );
 
-  // Wheel: Ctrl+wheel to zoom, plain wheel/trackpad to pan
+  // Wheel: Ctrl+wheel to zoom, plain wheel/trackpad to pan (disabled to lock camera)
   const handleWheel = useCallback(
     (e: WheelEvent) => {
       e.preventDefault();
-      if (e.ctrlKey || e.metaKey) {
-        // Accumulate scroll delta, step zoom when threshold crossed
-        zoomAccumulatorRef.current += e.deltaY;
-        if (Math.abs(zoomAccumulatorRef.current) >= ZOOM_SCROLL_THRESHOLD) {
-          const delta = zoomAccumulatorRef.current < 0 ? 1 : -1;
-          zoomAccumulatorRef.current = 0;
-          const newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom + delta));
-          if (newZoom !== zoom) {
-            onZoomChange(newZoom);
-          }
-        }
-      } else {
-        // Pan via trackpad two-finger scroll or mouse wheel
-        const dpr = window.devicePixelRatio || 1;
-        officeState.cameraFollowId = null;
-        panRef.current = clampPan(
-          panRef.current.x - e.deltaX * dpr,
-          panRef.current.y - e.deltaY * dpr,
-        );
-      }
     },
-    [zoom, onZoomChange, officeState, panRef, clampPan],
+    [],
   );
 
   // Attach wheel listener with { passive: false } so preventDefault() works.

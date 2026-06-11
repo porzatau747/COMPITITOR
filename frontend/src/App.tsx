@@ -579,17 +579,7 @@ function App() {
       <main className="center-column">
         {/* Canvas container */}
         <div className="canvas-container">
-          <div className="canvas-controls">
-            <button className="canvas-btn" onClick={() => setZoom(z => Math.max(1, z - 1))} title="Zoom Out">
-              <i className="fa-solid fa-minus"></i>
-            </button>
-            <button className="canvas-btn" onClick={() => setZoom(z => Math.min(10, z + 1))} title="Zoom In">
-              <i className="fa-solid fa-plus"></i>
-            </button>
-            <button className="canvas-btn" onClick={() => { setZoom(4); panRef.current = { x: 0, y: 0 }; }} title="Reset Camera">
-              <i className="fa-solid fa-expand"></i>
-            </button>
-          </div>
+
 
           {isAssetsLoaded && officeState ? (
             <OfficeCanvas

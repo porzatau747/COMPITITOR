@@ -98,12 +98,12 @@ export function OfficeCanvas({
     canvas.style.width = `${rect.width}px`;
     canvas.style.height = `${rect.height}px`;
 
-    // Auto-fit zoom on mount/resize (no padding around the map)
-    if (rect.width > 0 && rect.height > 0) {
+    // Auto-fit zoom on mount/resize (using canvas device pixels to support high-DPI displays)
+    if (canvas.width > 0 && canvas.height > 0) {
       const layout = officeState.getLayout();
       const mapW = layout.cols * TILE_SIZE;
       const mapH = layout.rows * TILE_SIZE;
-      let optimalZoom = Math.min(rect.width / mapW, rect.height / mapH);
+      let optimalZoom = Math.min(canvas.width / mapW, canvas.height / mapH);
       optimalZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, optimalZoom));
       optimalZoom = Math.floor(optimalZoom * 100) / 100;
       zoomRef.current = optimalZoom;

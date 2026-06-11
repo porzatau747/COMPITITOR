@@ -70,6 +70,9 @@ export function OfficeCanvas({
   const isEraseDraggingRef = useRef(false);
   // Zoom scroll accumulator for trackpad pinch sensitivity
   const zoomAccumulatorRef = useRef(0);
+  const lastAutoZoomRef = useRef<number | null>(null);
+  const currentZoomRef = useRef(zoom);
+  currentZoomRef.current = zoom;
 
   // Clamp pan so the map edge can't go past a margin inside the viewport
   const clampPan = useCallback(
@@ -102,8 +105,29 @@ export function OfficeCanvas({
     canvas.height = Math.round(rect.height * dpr);
     canvas.style.width = `${rect.width}px`;
     canvas.style.height = `${rect.height}px`;
-    // No ctx.scale(dpr) — we render directly in device pixels
-  }, []);
+
+    // Auto-fit zoom on mount/resize
+    if (rect.width > 0 && rect.height > 0) {
+      const layout = officeState.getLayout();
+      const mapW = layout.cols * TILE_SIZE;
+      const mapH = layout.rows * TILE_SIZE;
+      const padding = 40;
+      const maxW = rect.width - padding;
+      const maxH = rect.height - padding;
+      let optimalZoom = Math.min(maxW / mapW, maxH / mapH);
+      optimalZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, optimalZoom));
+      optimalZoom = Math.round(optimalZoom * 10) / 10;
+
+      const isFirstAutoFit = lastAutoZoomRef.current === null;
+      const userHasNotManuallyZoomed =
+        lastAutoZoomRef.current !== null && currentZoomRef.current === lastAutoZoomRef.current;
+
+      if (isFirstAutoFit || userHasNotManuallyZoomed) {
+        onZoomChange(optimalZoom);
+        lastAutoZoomRef.current = optimalZoom;
+      }
+    }
+  }, [officeState, onZoomChange]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

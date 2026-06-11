@@ -489,6 +489,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1rem;
+  flex-shrink: 0;
 }
 
 .metric-bar-group {
@@ -543,6 +544,7 @@ body {
   position: relative;
   overflow: hidden;
   transition: border-color 0.3s;
+  flex-shrink: 0;
 }
 
 .agent-card:hover {

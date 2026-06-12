@@ -114,26 +114,20 @@ function hslToHex(h: number, s: number, l: number): string {
   if (hp < 1) {
     r1 = c;
     g1 = x;
-    b1 = 0;
   } else if (hp < 2) {
     r1 = x;
     g1 = c;
-    b1 = 0;
   } else if (hp < 3) {
-    r1 = 0;
     g1 = c;
     b1 = x;
   } else if (hp < 4) {
-    r1 = 0;
     g1 = x;
     b1 = c;
   } else if (hp < 5) {
     r1 = x;
-    g1 = 0;
     b1 = c;
   } else {
     r1 = c;
-    g1 = 0;
     b1 = x;
   }
 
@@ -160,7 +154,7 @@ function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
   if (max === min) return [0, 0, l];
   const d = max - min;
   const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-  let h = 0;
+  let h: number;
   if (max === rf) h = ((gf - bf) / d + (gf < bf ? 6 : 0)) * 60;
   else if (max === gf) h = ((bf - rf) / d + 2) * 60;
   else h = ((rf - gf) / d + 4) * 60;

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { OfficeCanvas } from './office/components/OfficeCanvas.js';
+import { EditorState } from './office/editor/editorState.js';
 import { OfficeState } from './office/engine/officeState.js';
 import { deserializeLayout } from './office/layout/layoutSerializer.js';
 import { setCharacterTemplates } from './office/sprites/spriteData.js';
@@ -121,24 +122,7 @@ interface LogEntry {
 }
 
 // Mock editor state to prevent canvas crash
-const mockEditorState = {
-  activeTool: 0,
-  ghostCol: -1,
-  ghostRow: -1,
-  ghostValid: false,
-  selectedFurnitureType: '',
-  selectedFurnitureUid: null,
-  isDragMoving: false,
-  dragUid: null,
-  dragOffsetCol: 0,
-  dragOffsetRow: 0,
-  dragStartCol: 0,
-  dragStartRow: 0,
-  isDragging: false,
-  wallDragAdding: null,
-  clearDrag: () => {},
-  clearSelection: () => {}
-};
+const mockEditorState = new EditorState();
 
 function App() {
   const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
@@ -175,8 +159,13 @@ function App() {
 
   const consoleEndRef = useRef<HTMLDivElement>(null);
 
+  const addLog = useCallback((sender: string, text: string, type: 'system' | 'running' | 'success' | 'error' = 'system') => {
+    const time = new Date().toLocaleTimeString();
+    setLogs(prev => [...prev, { time, sender, text, type }]);
+  }, []);
+
   // API caller helper
-  const apiCall = useCallback(async (endpoint: string, method = 'GET', body: any = null) => {
+  const apiCall = useCallback(async (endpoint: string, method = 'GET', body: unknown = null) => {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (apiKey) {
       headers['X-Admin-API-Key'] = apiKey;
@@ -198,12 +187,7 @@ function App() {
       console.error(`API Error on ${endpoint}:`, e);
       return null;
     }
-  }, [apiKey, apiUrl]);
-
-  const addLog = useCallback((sender: string, text: string, type: 'system' | 'running' | 'success' | 'error' = 'system') => {
-    const time = new Date().toLocaleTimeString();
-    setLogs(prev => [...prev, { time, sender, text, type }]);
-  }, []);
+  }, [addLog, apiKey, apiUrl]);
 
   const refreshAll = useCallback(async () => {
     // Sources
@@ -596,7 +580,7 @@ function App() {
               officeState={officeState}
               onClick={handleAgentClick}
               isEditMode={false}
-              editorState={mockEditorState as any}
+              editorState={mockEditorState}
               onEditorTileAction={() => {}}
               onEditorEraseAction={() => {}}
               onEditorSelectionChange={() => {}}

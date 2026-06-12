@@ -169,26 +169,20 @@ export function wallColorToHex(color: ColorValue): string {
   if (hp < 1) {
     r1 = ch;
     g1 = x;
-    b1 = 0;
   } else if (hp < 2) {
     r1 = x;
     g1 = ch;
-    b1 = 0;
   } else if (hp < 3) {
-    r1 = 0;
     g1 = ch;
     b1 = x;
   } else if (hp < 4) {
-    r1 = 0;
     g1 = x;
     b1 = ch;
   } else if (hp < 5) {
     r1 = x;
-    g1 = 0;
     b1 = ch;
   } else {
     r1 = ch;
-    g1 = 0;
     b1 = x;
   }
 

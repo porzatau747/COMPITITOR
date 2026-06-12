@@ -131,11 +131,13 @@ def test_ops_summary_api_returns_dashboard_contract(db_session):
     from fastapi.testclient import TestClient
 
     from app.main import app
+    from app.security import require_admin_api_key_header
 
     def override_get_db():
         yield db_session
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[require_admin_api_key_header] = lambda: True
     try:
         response = TestClient(app).get("/ops/summary")
     finally:
@@ -157,6 +159,7 @@ def test_source_update_can_disable_source_with_partial_payload(db_session):
     from fastapi.testclient import TestClient
 
     from app.main import app
+    from app.security import require_admin_api_key_header
 
     source = Source(
         name="Disable Me",
@@ -172,6 +175,7 @@ def test_source_update_can_disable_source_with_partial_payload(db_session):
         yield db_session
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[require_admin_api_key_header] = lambda: True
     try:
         response = TestClient(app).put(f"/sources/{source.id}", json={"active": False})
     finally:

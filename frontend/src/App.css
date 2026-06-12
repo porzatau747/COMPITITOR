@@ -266,12 +266,16 @@ button:disabled {
 
 .activity-card {
   max-height: 260px;
+  display: flex;
+  flex-direction: column;
 }
 
 .activity-list {
   display: grid;
   gap: 9px;
   margin-top: 10px;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .activity-row {

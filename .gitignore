@@ -29,3 +29,6 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local worktrees
+.worktrees/

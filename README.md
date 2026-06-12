@@ -22,6 +22,7 @@
 - Tests พื้นฐานและ operational hardening tests
 - Job run tracking (`job_runs`) สำหรับดูสถานะ workflow ล่าสุด
 - Source health report ผ่าน CLI และ `/sources/health`
+- Operator dashboard summary ผ่าน `/ops/summary`
 - PostgreSQL migration helper สำหรับย้ายข้อมูลจาก SQLite
 - Telegram message chunking กันข้อความยาวเกิน limit
 
@@ -353,7 +354,7 @@ python -m pytest tests -q
 ## ข้อจำกัดของ MVP
 
 - Facebook จริงรองรับผ่าน manual import/Google Sheet export หรือ Meta Graph API ที่มีสิทธิ์เท่านั้น; ไม่รองรับ personal-login scraping หรือ bypass protection
-- ยังไม่ทำ Dashboard
+- มี Operator Dashboard พื้นฐานสำหรับดู workflow, source health, report/Telegram status, saved ideas และ production checklist
 - ยังไม่ Auto Post / Auto Share
 - AI จริงเปิดใช้ผ่าน Gemini แล้ว แต่ถ้า API quota/503 ล้มเหลว ระบบจะ fallback เป็น mock และใส่ warning ใน risk
 - PostgreSQL พร้อมผ่าน `DATABASE_URL` แต่การทดสอบ local ยังใช้ SQLite

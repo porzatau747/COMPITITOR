@@ -9,7 +9,7 @@
 | Task 5 | Approve Operator Dashboard design | done |
 | Task 6 | Create Operator Dashboard design doc | done |
 | Task 7 | Create Operator Dashboard implementation plan | done |
-| Task 8 | Decide implementation workspace/worktree | pending |
-| Task 9 | Implement ops summary backend slice | pending |
-| Task 10 | Implement operator dashboard frontend slices | pending |
-| Task 11 | Run full backend/frontend verification | pending |
+| Task 8 | Decide implementation workspace/worktree | done |
+| Task 9 | Implement ops summary backend slice | done |
+| Task 10 | Implement operator dashboard frontend slices | done |
+| Task 11 | Run full backend/frontend verification | done |

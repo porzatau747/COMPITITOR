@@ -80,7 +80,7 @@ export function EditorToolbar({
           const firstCat = activeCategories[0]?.id;
           if (firstCat) {
             console.log(`[EditorToolbar] Setting active category to: ${firstCat}`);
-            setActiveCategory(firstCat);
+            window.setTimeout(() => setActiveCategory(firstCat), 0);
           }
         }
       } catch (err) {

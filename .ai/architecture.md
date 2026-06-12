@@ -33,7 +33,7 @@ The application is structured as a modular, service-based Python project, built 
 ```
 
 1. **API Layer (`app/routers/` & `app/main.py`)**: Defines FastAPI paths, tags, request validations, and authorization dependency gates.
-2. **Business Logic Layer (`app/services/`)**: Implements functions for viral scoring, report generation, local adaptation, Telegram communications, and memory retrieval.
+2. **Business Logic Layer (`app/services/`)**: Implements functions for viral scoring, report generation, local adaptation, Telegram communications, memory retrieval, and operator dashboard summaries.
 3. **Data Collection Layer (`app/collectors/`)**: Defines modules for fetching external posts using APIs, manual CSV uploads, or HTML scrapers.
 4. **Data access Layer (`app/models/`, `app/schemas/`, `app/database.py`)**: Maps Python objects to SQL databases, sets unique constraints, and formats incoming/outgoing JSON schemas using Pydantic.
 5. **Background Jobs (`app/jobs/`)**: Integrates APScheduler to schedule daily routines and encapsulates the orchestrator logic of the workflow.

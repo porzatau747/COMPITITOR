@@ -51,9 +51,10 @@ def run_full_daily(db: Session, send: bool = False) -> dict:
     stale_count = cleanup_stale_job_runs(db, get_settings().stale_job_after_minutes)
     if not _daily_lock.acquire(blocking=False):
         return {"skipped": "daily workflow already running"}
-    run=JobRun(job_name="full_daily", status="running")
-    db.add(run); db.commit(); db.refresh(run)
+    run=None
     try:
+        run=JobRun(job_name="full_daily", status="running")
+        db.add(run); db.commit(); db.refresh(run)
         out={"stale_jobs_marked": stale_count}; out.update(run_collect(db)); out.update(run_score(db)); out.update(run_analyze(db)); out.update(run_generate_report(db))
         if send:
             from app.models import DailyReport
@@ -63,7 +64,13 @@ def run_full_daily(db: Session, send: bool = False) -> dict:
         return out
     except Exception as exc:
         db.rollback()
-        run.status="error"; run.error=str(exc)[:1000]; run.finished_at=datetime.utcnow(); db.add(run); db.commit()
+        if run is not None:
+            run.status="error"; run.error=str(exc)[:1000]; run.finished_at=datetime.utcnow(); db.add(run)
+            try:
+                db.commit()
+            except Exception:
+                db.rollback()
+                logger.exception("failed to persist full_daily error status")
         raise
     finally:
         _daily_lock.release()

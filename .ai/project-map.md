@@ -36,6 +36,7 @@ advice-content-radar/
 │   │   ├── __init__.py
 │   │   ├── ideas.py
 │   │   ├── jobs.py
+│   │   ├── ops.py
 │   │   ├── posts.py
 │   │   ├── reports.py
 │   │   └── sources.py
@@ -53,6 +54,7 @@ advice-content-radar/
 │   │   ├── memory_service.py
 │   │   ├── report_service.py
 │   │   ├── scoring_service.py
+│   │   ├── ops_summary_service.py
 │   │   ├── source_health_service.py
 │   │   ├── telegram_command_service.py
 │   │   └── telegram_service.py
@@ -101,6 +103,7 @@ All routes (except `/health` and `/telegram/webhook`) require `X-Admin-API-Key` 
 | **GET** | `/health` | `main.py` | None | Service check endpoint |
 | **POST** | `/telegram/webhook` | `main.py` | `X-Telegram-Bot-Api-Secret-Token` | Handles incoming webhook commands from Telegram |
 | **GET** | `/sources/health` | `sources.py` | Admin Key | Returns health status of all data sources |
+| **GET** | `/ops/summary` | `ops.py` | Admin Key | Returns operator dashboard status summary |
 | **GET** | `/sources` | `sources.py` | Admin Key | Lists registered sources |
 | **POST** | `/sources` | `sources.py` | Admin Key | Registers a new source |
 | **PUT** | `/sources/{source_id}` | `sources.py` | Admin Key | Updates a source configuration |
@@ -211,6 +214,9 @@ All routes (except `/health` and `/telegram/webhook`) require `X-Admin-API-Key` 
 * **`analyze_top_posts(db, limit)`**: Pulls the highest scoring un-analyzed posts and saves `Analysis` entries.
 * **`generate_daily_report(db)`**: Assembles daily report briefings.
 * **`build_morning_brief(...)`**: Compiles textual Thai layout for Telegram message.
+
+### `ops_summary_service.py`
+* **`build_ops_summary(db)`**: Aggregates latest job, source health, latest report, Telegram delivery state, saved ideas, and masked production checks for the operator dashboard.
 
 ### `telegram_service.py`
 * **`send_telegram_message(text)`**: Dispatches messages to Telegram Bot endpoint. Handles chunking.

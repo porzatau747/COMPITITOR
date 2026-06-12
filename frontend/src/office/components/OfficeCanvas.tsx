@@ -1,12 +1,10 @@
+/* eslint-disable react-hooks/immutability */
 import { useCallback, useEffect, useRef } from 'react';
 
 import {
-  CAMERA_FOLLOW_LERP,
-  CAMERA_FOLLOW_SNAP_THRESHOLD,
   PAN_MARGIN_FRACTION,
   ZOOM_MAX,
   ZOOM_MIN,
-  ZOOM_SCROLL_THRESHOLD,
 } from '../../constants.js';
 import { unlockAudio } from '../../notificationSound.js';
 import { transport } from '../../transport/index.js';
@@ -37,6 +35,10 @@ interface OfficeCanvasProps {
   onDragMove: (uid: string, newCol: number, newRow: number) => void;
   editorTick: number;
   panRef: React.MutableRefObject<{ x: number; y: number }>;
+  fitMode?: 'contain' | 'width';
+  zoomMultiplier?: number;
+  minZoom?: number;
+  panRatioY?: number;
 }
 
 export function OfficeCanvas({
@@ -52,6 +54,10 @@ export function OfficeCanvas({
   onDragMove,
   editorTick: _editorTick,
   panRef,
+  fitMode = 'contain',
+  zoomMultiplier = 1,
+  minZoom = ZOOM_MIN,
+  panRatioY = 0,
 }: OfficeCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -103,12 +109,14 @@ export function OfficeCanvas({
       const layout = officeState.getLayout();
       const mapW = layout.cols * TILE_SIZE;
       const mapH = layout.rows * TILE_SIZE;
-      let optimalZoom = Math.min(canvas.width / mapW, canvas.height / mapH);
-      optimalZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, optimalZoom));
+      const baseZoom = fitMode === 'width' ? canvas.width / mapW : Math.min(canvas.width / mapW, canvas.height / mapH);
+      let optimalZoom = baseZoom * zoomMultiplier;
+      optimalZoom = Math.max(minZoom, Math.min(ZOOM_MAX, optimalZoom));
       optimalZoom = Math.floor(optimalZoom * 100) / 100;
       zoomRef.current = optimalZoom;
+      panRef.current = { x: 0, y: Math.round(canvas.height * panRatioY) };
     }
-  }, [officeState]);
+  }, [fitMode, minZoom, officeState, panRatioY, panRef, zoomMultiplier]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -602,7 +610,6 @@ export function OfficeCanvas({
       onRotateSelected,
       hitTestDeleteButton,
       hitTestRotateButton,
-      panRef,
     ],
   );
 

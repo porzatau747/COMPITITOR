@@ -11,6 +11,6 @@
 | Task 7 | Create Operator Dashboard implementation plan | done |
 | Task 8 | Decide implementation workspace/worktree | pending |
 | Task 9 | Clean frontend lint baseline in implementation branch | done |
-| Task 10 | Implement ops summary backend slice | in_progress |
-| Task 11 | Implement operator dashboard frontend slices | pending |
+| Task 10 | Implement ops summary backend slice | done |
+| Task 11 | Implement operator dashboard frontend slices | in_progress |
 | Task 12 | Run full backend/frontend verification | pending |

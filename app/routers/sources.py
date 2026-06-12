@@ -18,7 +18,7 @@ def create_source(payload: SourceCreate, db: Session=Depends(get_db)):
 def update_source(source_id:int, payload: SourceUpdate, db: Session=Depends(get_db)):
     obj=db.get(Source, source_id)
     if not obj: raise HTTPException(404,"source not found")
-    for k,v in payload.model_dump().items(): setattr(obj,k,v)
+    for k,v in payload.model_dump(exclude_unset=True).items(): setattr(obj,k,v)
     db.commit(); db.refresh(obj); return obj
 @router.delete("/{source_id}")
 def delete_source(source_id:int, db: Session=Depends(get_db)):

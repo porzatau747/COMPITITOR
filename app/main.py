@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI, Header
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from app.database import init_db, get_db
-from app.routers import sources, posts, reports, ideas, jobs
+from app.routers import sources, posts, reports, ideas, jobs, ops
 from app.security import require_admin_api_key_header, validate_telegram_webhook_update
 from app.services.telegram_service import handle_command
 
@@ -34,6 +34,7 @@ app.include_router(posts.router, dependencies=[Depends(require_admin_api_key_hea
 app.include_router(reports.router, dependencies=[Depends(require_admin_api_key_header)])
 app.include_router(ideas.router, dependencies=[Depends(require_admin_api_key_header)])
 app.include_router(jobs.router, dependencies=[Depends(require_admin_api_key_header)])
+app.include_router(ops.router, dependencies=[Depends(require_admin_api_key_header)])
 
 # Mount static files for dashboard frontend
 static_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")

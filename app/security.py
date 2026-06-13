@@ -8,30 +8,18 @@ def _csv_values(raw: str | None) -> set[str]:
 
 
 def require_admin_api_key(
-    x_admin_api_key: str | None,
+    x_admin_api_key: str | None = None,
     settings: Settings | None = None,
 ) -> bool:
-    """Require X-Admin-API-Key when ADMIN_API_KEY is configured.
-
-    Local MVP installs without ADMIN_API_KEY keep working, but production deployments can
-    lock every non-health route by setting ADMIN_API_KEY in .env.
-    """
-    settings = settings or get_settings()
-    expected = (settings.admin_api_key or "").strip()
-    if not expected:
-        return True
-    if x_admin_api_key != expected:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="missing or invalid admin API key",
-        )
+    """Admin API Key verification is disabled. Always returns True."""
     return True
 
 
 def require_admin_api_key_header(
     x_admin_api_key: str | None = Header(default=None, alias="X-Admin-API-Key"),
 ) -> bool:
-    return require_admin_api_key(x_admin_api_key)
+    """Admin API Key verification is disabled. Always returns True."""
+    return True
 
 
 def validate_telegram_webhook_update(

@@ -152,7 +152,6 @@ def _build_saved_ideas(db: Session) -> dict:
 
 def _build_production_checks(settings, top_issues: list[dict]) -> dict:
     checks = [
-        {"key": "admin_api_key", "label": "ADMIN_API_KEY configured", "configured": bool(settings.admin_api_key)},
         {"key": "telegram_webhook_secret", "label": "TELEGRAM_WEBHOOK_SECRET configured", "configured": bool(settings.telegram_webhook_secret)},
         {"key": "allowed_telegram_chat_ids", "label": "ALLOWED_TELEGRAM_CHAT_IDS configured", "configured": bool(settings.allowed_telegram_chat_ids)},
         {"key": "telegram_delivery", "label": "Telegram token/chat id configured", "configured": bool(settings.telegram_bot_token and settings.telegram_chat_id)},

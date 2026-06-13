@@ -390,14 +390,7 @@ function App() {
   }, [activeAction?.key, officeState, summary.latest_job.status]);
 
   const requireApiKey = () => {
-    if (apiKey.trim()) return true;
-    const detail = 'กรุณากดตั้งค่าแล้วใส่ ADMIN_API_KEY ก่อนรันคำสั่ง';
-    setBanner({ tone: 'error', title: 'ยังไม่ได้ใส่คีย์ผู้ดูแล', detail });
-    addActivity('ต้องตั้งค่า ADMIN_API_KEY', detail, 'error');
-    setTempApiKey(apiKey);
-    setTempApiUrl(apiUrl);
-    setShowSettings(true);
-    return false;
+    return true;
   };
 
   const runAction = async (action: ActionConfig) => {
@@ -720,10 +713,6 @@ function App() {
         <div className="settings-backdrop">
           <div className="settings-modal">
             <h2>ตั้งค่า API</h2>
-            <label>
-              คีย์ผู้ดูแลระบบ (Admin API Key)
-              <input value={tempApiKey} onChange={(event) => setTempApiKey(event.target.value)} type="password" />
-            </label>
             <label>
               URL ฐานของ API
               <input value={tempApiUrl} onChange={(event) => setTempApiUrl(event.target.value)} />

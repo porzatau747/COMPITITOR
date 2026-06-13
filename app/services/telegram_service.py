@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.models import DailyReport, SavedIdea
+from app.services.agent_os_service import is_agent_os_command, render_agent_os_command
 from app.services.report_service import get_idea_from_today
 from app.services.telegram_command_service import parse_number_arg, render_caption_response, render_carousel_response, render_reels_response
 logger=logging.getLogger(__name__)
@@ -76,8 +77,8 @@ def send_report(db: Session, report: DailyReport | None) -> bool:
 
 def handle_command(db: Session, text: str) -> str:
     cmd=(text or "").strip()
-    if cmd.startswith('/today'):
-        r=db.query(DailyReport).order_by(DailyReport.report_date.desc()).first(); return r.telegram_message if r else "ยังไม่มีรายงานวันนี้ ลอง /jobs/full-daily-run ก่อน"
+    if is_agent_os_command(cmd):
+        return render_agent_os_command(db, cmd)
     if cmd.startswith('/caption'):
         idea=get_idea_from_today(db, parse_number_arg(cmd)); return render_caption_response(idea) if idea else "ไม่พบไอเดียลำดับนี้"
     if cmd.startswith('/carousel'):
@@ -94,4 +95,8 @@ def handle_command(db: Session, text: str) -> str:
     if cmd.startswith('/used'):
         number=parse_number_arg(cmd); obj=mark_idea_used(db, number)
         return f"ทำเครื่องหมายว่าใช้ไอเดียลำดับ {number} แล้วครับ" if obj else "ไม่พบไอเดียลำดับนี้"
-    return "คำสั่งที่ใช้ได้: /today /caption 1 /carousel 1 /reels 1 /post_plan /save_idea 1 /used 1 /more"
+    return render_agent_os_help_fallback()
+
+
+def render_agent_os_help_fallback() -> str:
+    return "คำสั่งที่ใช้ได้: /status /today /radar /aging /planner /promos /canva_preview /caption 1 /carousel 1 /reels 1 /post_plan /save_idea 1 /used 1 /more"

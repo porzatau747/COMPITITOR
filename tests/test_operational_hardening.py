@@ -98,3 +98,88 @@ def test_api_key_pool_rotation_on_failure(monkeypatch):
     assert res["hook"] == "Test Hook"
     assert ai_service._current_key_index == 1
 
+
+def test_backup_api_key_fallback_on_all_primary_keys_failure(monkeypatch):
+    import json
+    from app.services.ai_analyzer_service import analyze_post_with_ai
+    import app.services.ai_analyzer_service as ai_service
+    from app.config import Settings
+    
+    ai_service._current_key_index = 0
+    
+    mock_settings = Settings(
+        ai_api_key="bad_key1",
+        ai_base_url="https://generativelanguage.googleapis.com",
+        ai_model="gemini-2.5-flash",
+        backup_ai_api_key="good_backup_key",
+        backup_ai_base_url="https://backup.maas.aliyuncs.com/v1",
+        backup_ai_model="backup-qwen-plus",
+        mock_mode=False
+    )
+    monkeypatch.setattr("app.services.ai_analyzer_service.get_settings", lambda: mock_settings)
+    
+    # Mock primary key generator to fail
+    def mock_analyze_gemini(prompt, key, base_url, model):
+        raise RuntimeError("Gemini key error status=429 Quota Exceeded")
+    monkeypatch.setattr("app.services.ai_analyzer_service._analyze_with_gemini", mock_analyze_gemini)
+    
+    # Mock openai client that is used for backup key
+    called_backup_client_args = []
+    called_backup_completions_args = []
+    
+    class MockChatCompletionsMessage:
+        content = json.dumps({
+            "hook": "Backup Hook",
+            "hook_type": ["Question Hook"],
+            "content_type": "IT Upgrade",
+            "pain_point": "High Price",
+            "engagement_trigger": [],
+            "why_it_worked": "Simple explanation",
+            "risk": [],
+            "detected_product_category": ["Upgrade"],
+            "local_angle": "Draft",
+            "suggested_hook": "Hook",
+            "caption_draft": "Draft",
+            "creative_direction": "Dir",
+            "sales_bridge": "Bridge",
+            "cta": "Call"
+        })
+        
+    class MockChatCompletionsChoice:
+        message = MockChatCompletionsMessage()
+        
+    class MockChatCompletionsResponse:
+        choices = [MockChatCompletionsChoice()]
+        
+    class MockChatCompletions:
+        def create(self, **kwargs):
+            called_backup_completions_args.append(kwargs)
+            return MockChatCompletionsResponse()
+            
+    class MockChat:
+        completions = MockChatCompletions()
+        
+    class MockOpenAI:
+        def __init__(self, **kwargs):
+            called_backup_client_args.append(kwargs)
+            self.chat = MockChat()
+            
+    monkeypatch.setattr("app.services.ai_analyzer_service.OpenAI", MockOpenAI)
+    
+    class MockPost:
+        post_text = "Primary key failure test"
+        like_count = 10
+        comment_count = 5
+        share_count = 2
+        view_count = 0
+        
+    post = MockPost()
+    res = analyze_post_with_ai(post, "Test Page")
+    
+    assert len(called_backup_client_args) == 1
+    assert called_backup_client_args[0]["api_key"] == "good_backup_key"
+    assert called_backup_client_args[0]["base_url"] == "https://backup.maas.aliyuncs.com/v1"
+    assert len(called_backup_completions_args) == 1
+    assert called_backup_completions_args[0]["model"] == "backup-qwen-plus"
+    assert res["hook"] == "Backup Hook"
+

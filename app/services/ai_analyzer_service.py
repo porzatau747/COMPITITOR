@@ -161,6 +161,25 @@ def analyze_post_with_ai(post, source_name: str) -> dict:
             # Rotate key index
             _current_key_index = (active_index + 1) % num_keys
             
+    if s.backup_ai_api_key:
+        try:
+            logger.info("Primary AI API keys failed; trying backup AI API key...")
+            client = OpenAI(
+                api_key=s.backup_ai_api_key,
+                base_url=s.backup_ai_base_url or "https://ws-cjzdjpjulzhupzez.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
+            )
+            resp = client.chat.completions.create(
+                model=s.backup_ai_model or "qwen-plus",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.2,
+                response_format={"type": "json_object"},
+            )
+            data = _extract_json(resp.choices[0].message.content or "{}")
+            data["_analysis_mode"] = "ai"
+            return data
+        except Exception as backup_exc:
+            logger.error("Backup AI API key failed: %s", backup_exc)
+            
     logger.error("All AI API keys in pool failed; using mock analysis: %s", last_error)
     return mock_analyze_post(post, source_name)
 

@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     stale_job_after_minutes: int = 60
     timezone: str = "Asia/Bangkok"
     mock_mode: bool = True
+    backup_ai_api_key: str | None = None
+    backup_ai_base_url: str | None = "https://ws-cjzdjpjulzhupzez.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"
+    backup_ai_model: str = "qwen-plus"
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @field_validator("timezone", mode="before")
